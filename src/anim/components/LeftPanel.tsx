@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 const EMPTY_ARRAY: any[] = [];
 import CustomColorPicker from './CustomColorPicker';
+import { BrushStrokeIcon } from './BrushStrokeIcons';
 import { 
   Folder, 
   ChevronRight, 
@@ -408,7 +409,7 @@ function LeftPanel({
     const twoLetters = (obj.name || 'DR').trim().slice(0, 2).toUpperCase();
 
     return (
-      <div key={obj.id} className="flex flex-col">
+      <div key={obj.id} className="flex flex-col drawing-card-item">
         <div
           draggable={!isTouchDevice && isInteractable}
           onDragStart={(e) => isInteractable && handleDragStart(obj.id, e)}
@@ -416,139 +417,127 @@ function LeftPanel({
           onDrop={(e) => isInteractable && handleDrop(obj.id, e)}
           onClick={() => {
             if (!isInteractable) return;
-            // Unselect if already selected, otherwise select
             setSelectedObjectId(isSelected ? null : obj.id);
           }}
           onTouchEnd={(e) => {
-            // Avoid triggering when tapping inner buttons or inputs
             const target = e.target as HTMLElement;
             if (target.closest('button') || target.closest('input') || target.closest('#rename-input-container')) {
               return;
             }
-            e.preventDefault(); // Stop synthetic click delay and bypass draggable touch interference on mobile screens
+            e.preventDefault();
             if (!isInteractable) return;
             setSelectedObjectId(isSelected ? null : obj.id);
           }}
-          style={{ paddingLeft: `${depth * 14 + 8}px` }}
-          className={`flex items-center justify-between py-2 px-2.5 rounded-2xl group/item transition-colors select-none cursor-pointer border-2 ${
+          style={{ paddingLeft: `${depth * 10 + 8}px` }}
+          className={`flex flex-col gap-2 p-2.5 rounded-2xl group/item transition-all select-none cursor-pointer border-2 ${
             isSelected 
-              ? 'bg-amber-500/25 border-amber-400 text-amber-300 shadow-md font-black' 
-              : 'border-neutral-800/80 bg-neutral-900/60 hover:bg-neutral-800 text-white font-bold'
+              ? 'bg-amber-100 dark:bg-amber-500/25 border-black dark:border-amber-400 text-black dark:text-amber-300 shadow-none font-black ring-2 ring-black dark:ring-amber-400' 
+              : 'border-neutral-300 dark:border-neutral-800 bg-white dark:bg-neutral-900/90 hover:bg-neutral-50 dark:hover:bg-neutral-850 hover:border-neutral-400 text-black dark:text-white font-bold'
           }`}
         >
-          {/* Main Drawing Row: Clicking strictly selects or unselects */}
-          <div className="flex items-center gap-2 min-w-0 flex-1 pointer-events-none">
-            {/* Collapse / Expand Arrow */}
-            <button
-              type="button"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                toggleExpand(obj.id, e);
-              }}
-              className="p-1 rounded-lg hover:bg-neutral-700 text-neutral-400 shrink-0 pointer-events-auto cursor-pointer"
-              title={isExpanded ? "Collapse full drawing details" : "Expand full drawing details"}
-            >
-              {isExpanded ? <ChevronDown className="w-4.5 h-4.5 stroke-[2.4] text-amber-400" /> : <ChevronRight className="w-4.5 h-4.5 stroke-[2.4] text-neutral-400" />}
-            </button>
+          {/* Top Row: Drawing Name strictly at the top, bold, full opacity, horizontal expansion only */}
+          <div className="card-top-row flex items-center justify-between gap-2 min-w-0 w-full">
+            <div className="flex items-center gap-2 min-w-0 flex-1 overflow-x-auto scrollbar-none">
+              {/* Type Icon */}
+              {obj.type === 'image' ? (
+                <ImageIcon className="w-4 h-4 stroke-[2.4] text-black dark:text-neutral-300 shrink-0" />
+              ) : obj.type === 'text' ? (
+                <TextIcon className="w-4 h-4 stroke-[2.4] text-black dark:text-neutral-300 shrink-0" />
+              ) : (
+                <PenTool className="w-4 h-4 stroke-[2.4] text-black dark:text-amber-400 shrink-0" />
+              )}
 
-            {/* Type Icon */}
-            {obj.type === 'image' ? (
-              <ImageIcon className="w-4.5 h-4.5 stroke-[2.3] text-neutral-400 shrink-0" />
-            ) : obj.type === 'text' ? (
-              <TextIcon className="w-4.5 h-4.5 stroke-[2.3] text-neutral-400 shrink-0" />
-            ) : (
-              <PenTool className="w-4.5 h-4.5 stroke-[2.3] text-neutral-300 shrink-0" />
-            )}
-
-            {/* 2-Letter Badge to guarantee clear visibility when space is compact */}
-            <span 
-              className="px-2 py-0.5 rounded-lg bg-neutral-800 border-2 border-neutral-700 text-amber-300 font-mono text-xs font-black shrink-0 tracking-wider shadow-sm select-none"
-              title={`Drawing: ${obj.name}`}
-            >
-              {twoLetters}
-            </span>
-
-            {/* Drawing Name: strictly plain text display with 100% solid opacity */}
-            {renamingId === obj.id ? (
-              <div 
-                id="rename-input-container"
-                className="flex items-center gap-1.5 min-w-0 pointer-events-auto" 
-                onClick={(e) => e.stopPropagation()}
-                onPointerDown={(e) => e.stopPropagation()}
-                onTouchEnd={(e) => e.stopPropagation()}
-              >
-                <input
-                  type="text"
-                  value={renameText}
-                  onChange={(e) => setRenamingText(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') handleRenameSave(obj.id);
-                    if (e.key === 'Escape') setRenamingId(null);
-                  }}
-                  autoFocus
-                  style={{ fontSize: '16px' }}
-                  className="bg-neutral-950 text-white border-2 border-amber-400 px-2 py-0.5 rounded outline-none w-28 font-bold shadow-inner"
-                />
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    handleRenameSave(obj.id);
-                  }}
-                  className="p-1 rounded bg-amber-500 text-neutral-950 hover:bg-amber-400 font-bold shrink-0"
-                  title="Save Name"
-                >
-                  <Check className="w-3 h-3 stroke-[3]" />
-                </button>
-              </div>
-            ) : (
+              {/* 2-Letter Badge */}
               <span 
-                className={`text-[12.5px] truncate font-bold select-none flex-1 transition-colors min-w-0 ${
-                  isSelected ? 'text-amber-300 font-extrabold' : 'text-white group-hover/item:text-amber-200'
-                }`}
-                title={isSelected ? `[Selected] ${obj.name} (Click to unselect)` : `${obj.name} (Click to select)`}
+                className="px-1.5 py-0.5 rounded-md bg-neutral-200 dark:bg-neutral-800 border border-neutral-400 dark:border-neutral-700 text-black dark:text-amber-300 font-mono text-[11px] font-black shrink-0 tracking-wider"
+                title={`Drawing: ${obj.name}`}
               >
-                {obj.name}
+                {twoLetters}
               </span>
+
+              {/* Drawing Name - Strictly only expands horizontally, never vertically */}
+              {renamingId === obj.id ? (
+                <div 
+                  id="rename-input-container"
+                  className="flex items-center gap-1.5 min-w-0 pointer-events-auto" 
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <input
+                    type="text"
+                    value={renameText}
+                    onChange={(e) => setRenamingText(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') handleRenameSave(obj.id);
+                      if (e.key === 'Escape') setRenamingId(null);
+                    }}
+                    autoFocus
+                    className="bg-white dark:bg-neutral-950 text-black dark:text-white border-2 border-black dark:border-amber-400 px-2 py-0.5 rounded outline-none w-32 font-black text-xs"
+                  />
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleRenameSave(obj.id);
+                    }}
+                    className="p-1 rounded bg-black text-white dark:bg-amber-500 dark:text-neutral-950 font-black shrink-0 cursor-pointer"
+                    title="Save Name"
+                  >
+                    <Check className="w-3.5 h-3.5 stroke-[3]" />
+                  </button>
+                </div>
+              ) : (
+                <span 
+                  className="text-xs font-black select-none whitespace-nowrap overflow-hidden text-ellipsis flex-1 min-w-0 transition-colors text-black dark:text-white"
+                  title={isSelected ? `[Selected] ${obj.name}` : obj.name}
+                >
+                  {obj.name}
+                </span>
+              )}
+            </div>
+
+            {hasChildren && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleExpand(obj.id, e);
+                }}
+                className="p-1 rounded-lg hover:bg-neutral-200 dark:hover:bg-neutral-700 text-black dark:text-neutral-300 shrink-0 cursor-pointer"
+                title={isExpanded ? "Collapse group" : "Expand group"}
+              >
+                {isExpanded ? <ChevronDown className="w-4 h-4 stroke-[2.4] text-black dark:text-amber-400" /> : <ChevronRight className="w-4 h-4 stroke-[2.4] text-black dark:text-neutral-400" />}
+              </button>
             )}
           </div>
 
-          {/* Quick Item Actions - fit snugly within original w-64 width */}
-          <div className="flex items-center gap-0.5 ml-auto pl-1 shrink-0">
-            {/* Edit drawing name button */}
+          {/* Bottom Row: Options distinctly in their own horizontal row so they NEVER hide drawing name */}
+          <div className="card-actions-row flex items-center justify-end gap-1.5 w-full pt-1 border-t border-neutral-200 dark:border-neutral-800/80">
             <button
               type="button"
-              onPointerDown={(e) => { e.stopPropagation(); }}
-              onMouseDown={(e) => { e.stopPropagation(); }}
-              onTouchStart={(e) => { e.stopPropagation(); }}
-              onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); startRename(obj, e); }}
               onClick={(e) => {
-                e.preventDefault();
                 e.stopPropagation();
                 startRename(obj, e);
               }}
-              className="p-1.5 rounded-lg hover:bg-neutral-700 text-neutral-300 hover:text-amber-400 transition-colors pointer-events-auto cursor-pointer"
+              className="card-action-btn w-7 h-7 flex items-center justify-center rounded-lg hover:bg-neutral-200 dark:hover:bg-neutral-800 text-black dark:text-neutral-300 border border-neutral-300 dark:border-neutral-700 transition-colors cursor-pointer shrink-0"
               title="Rename drawing"
             >
-              <Edit2 className="w-4 h-4 stroke-[2.2]" />
+              <Edit2 className="w-3.5 h-3.5 stroke-[2.4]" />
             </button>
             <button
               type="button"
               onClick={(e) => toggleVisibility(obj, e)}
-              className="p-1.5 rounded-lg hover:bg-neutral-700 text-neutral-300 hover:text-white transition-colors pointer-events-auto cursor-pointer"
+              className="card-action-btn w-7 h-7 flex items-center justify-center rounded-lg hover:bg-neutral-200 dark:hover:bg-neutral-800 text-black dark:text-neutral-300 border border-neutral-300 dark:border-neutral-700 transition-colors cursor-pointer shrink-0"
               title="Show/Hide drawing"
             >
-              {obj.isHidden ? <EyeOff className="w-4 h-4 stroke-[2.2] text-rose-400" /> : <Eye className="w-4 h-4 stroke-[2.2] text-neutral-300" />}
+              {obj.isHidden ? <EyeOff className="w-3.5 h-3.5 stroke-[2.4] text-rose-600" /> : <Eye className="w-3.5 h-3.5 stroke-[2.4] text-black dark:text-neutral-300" />}
             </button>
             <button
               type="button"
               onClick={(e) => toggleLock(obj, e)}
-              className="p-1.5 rounded-lg hover:bg-neutral-700 text-neutral-300 hover:text-white transition-colors pointer-events-auto cursor-pointer"
-              title={obj.isLocked ? "Unlock drawing" : "Lock drawing on layer"}
+              className="card-action-btn w-7 h-7 flex items-center justify-center rounded-lg hover:bg-neutral-200 dark:hover:bg-neutral-800 text-black dark:text-neutral-300 border border-neutral-300 dark:border-neutral-700 transition-colors cursor-pointer shrink-0"
+              title={obj.isLocked ? "Unlock drawing" : "Lock drawing"}
             >
-              {obj.isLocked ? <Lock className="w-4 h-4 stroke-[2.2] text-rose-400" /> : <Unlock className="w-4 h-4 stroke-[2.2] text-neutral-300" />}
+              {obj.isLocked ? <Lock className="w-3.5 h-3.5 stroke-[2.4] text-rose-600" /> : <Unlock className="w-3.5 h-3.5 stroke-[2.4] text-black dark:text-neutral-300" />}
             </button>
             <button
               type="button"
@@ -556,10 +545,10 @@ function LeftPanel({
                 e.stopPropagation();
                 duplicateObject(obj.id);
               }}
-              className="p-1.5 rounded-lg hover:bg-neutral-700 text-neutral-300 hover:text-amber-400 transition-colors pointer-events-auto cursor-pointer"
+              className="card-action-btn w-7 h-7 flex items-center justify-center rounded-lg hover:bg-neutral-200 dark:hover:bg-neutral-800 text-black dark:text-neutral-300 border border-neutral-300 dark:border-neutral-700 transition-colors cursor-pointer shrink-0"
               title="Duplicate drawing"
             >
-              <Copy className="w-4 h-4 stroke-[2.2]" />
+              <Copy className="w-3.5 h-3.5 stroke-[2.4]" />
             </button>
             <button
               type="button"
@@ -567,10 +556,10 @@ function LeftPanel({
                 e.stopPropagation();
                 deleteObject(obj.id);
               }}
-              className="p-1.5 rounded-lg hover:bg-neutral-700 text-neutral-300 hover:text-rose-400 transition-colors pointer-events-auto cursor-pointer"
+              className="card-action-btn w-7 h-7 flex items-center justify-center rounded-lg hover:bg-rose-100 dark:hover:bg-neutral-800 text-rose-600 border border-neutral-300 dark:border-neutral-700 transition-colors cursor-pointer shrink-0"
               title="Delete drawing"
             >
-              <Trash2 className="w-4 h-4 stroke-[2.2]" />
+              <Trash2 className="w-3.5 h-3.5 stroke-[2.4]" />
             </button>
           </div>
         </div>
@@ -622,16 +611,16 @@ function LeftPanel({
           transform: 'translateY(-50%)',
           zIndex: 100,
         }}
-        className="pointer-events-auto w-10 sm:w-11 h-28 sm:h-32 bg-neutral-900 hover:bg-amber-500 border-2 border-l-0 border-amber-500/80 hover:border-amber-400 rounded-r-2xl flex flex-col items-center justify-center text-amber-400 hover:text-neutral-950 transition-all cursor-pointer shadow-2xl group select-none"
+        className="pointer-events-auto w-10 sm:w-11 h-28 sm:h-32 bg-white hover:bg-neutral-100 border border-l-0 border-neutral-200 rounded-r-2xl flex flex-col items-center justify-center text-black transition-all cursor-pointer shadow-md group select-none"
         title={open ? "Close Layers Panel" : "Open Layers Panel"}
         aria-label="Toggle Layers Panel"
       >
         {open ? (
-          <ChevronLeft className="w-6 h-6 stroke-[3] transition-transform group-hover:-translate-x-0.5" />
+          <ChevronLeft className="w-6 h-6 stroke-[3] transition-transform group-hover:-translate-x-0.5 text-black" />
         ) : (
-          <ChevronRight className="w-6 h-6 stroke-[3] transition-transform group-hover:translate-x-0.5" />
+          <ChevronRight className="w-6 h-6 stroke-[3] transition-transform group-hover:translate-x-0.5 text-black" />
         )}
-        <span className="text-[10px] font-black uppercase tracking-wider mt-1 opacity-90 group-hover:opacity-100 [writing-mode:vertical-lr] rotate-180">
+        <span className="text-[10px] font-black uppercase tracking-wider mt-1 text-black [writing-mode:vertical-lr] rotate-180">
           {open ? 'CLOSE' : 'TREE'}
         </span>
       </button>
@@ -642,22 +631,22 @@ function LeftPanel({
           open ? 'w-64' : 'w-0'
         }`}
       >
-        <div className={`pointer-events-auto w-full h-full bg-neutral-900/95 border-r-2 border-neutral-800 flex flex-col overflow-hidden ${
+        <div className={`pointer-events-auto w-full h-full bg-white border-r border-neutral-200 flex flex-col overflow-hidden text-black ${
           open ? 'w-64' : 'w-0 border-r-0'
         }`}>
         {open && (
         <>
           {/* Header */}
-          <div className="h-16 border-b-2 border-neutral-800 flex items-center justify-between px-4 shrink-0 select-none">
-            <span className="text-sm uppercase tracking-widest font-black text-neutral-200 flex items-center gap-2">
-              <Folder className="w-5 h-5 stroke-[2.5] text-amber-400" />
+          <div className="h-16 border-b border-neutral-200 flex items-center justify-between px-4 shrink-0 select-none bg-white">
+            <span className="text-sm uppercase tracking-widest font-black text-black flex items-center gap-2">
+              <Folder className="w-5 h-5 stroke-[2.5] text-amber-500" />
               HIERARCHY TREE
             </span>
             <div className="flex items-center gap-2">
               <button
                 onClick={handleGroupSelected}
                 disabled={!selectedObjectId}
-                className={`p-2 rounded-xl border-2 border-neutral-800 hover:border-neutral-700 hover:bg-neutral-800 text-neutral-300 hover:text-white transition-all cursor-pointer ${
+                className={`p-2 rounded-xl bg-white hover:bg-neutral-100 text-black transition-all cursor-pointer border-0 shadow-sm ${
                   !selectedObjectId ? 'opacity-40 cursor-not-allowed' : ''
                 }`}
                 title="Add Selected to Group"
@@ -666,7 +655,7 @@ function LeftPanel({
               </button>
               <button
                 onClick={() => setOpen(false)}
-                className="p-2 rounded-xl border-2 border-neutral-800 hover:border-neutral-700 hover:bg-neutral-850 text-neutral-400 hover:text-rose-400 transition-all lg:hidden cursor-pointer"
+                className="p-2 rounded-xl bg-white hover:bg-neutral-100 text-black transition-all lg:hidden cursor-pointer border-0 shadow-sm"
                 title="Close Sidebar"
               >
                 <ChevronLeft className="w-5 h-5 stroke-[2.4]" />
@@ -903,48 +892,62 @@ function LeftPanel({
                   <label className="text-[9px] text-neutral-400 font-bold uppercase flex justify-between">
                     <span>Brush Medium Preset</span>
                   </label>
-                  <div className="grid grid-cols-3 gap-1">
+                  <div className="flex flex-col gap-2 w-full max-h-96 overflow-y-auto pr-1">
                     {[
-                      { id: 'solid', label: 'Solid' },
-                      { id: 'cold', label: 'Cold' },
-                      { id: 'dry', label: 'Dry Bristle' },
-                      { id: 'smooth', label: 'Smooth' },
-                      { id: 'water', label: 'Water' },
-                      { id: 'calligraphy', label: 'Calligraphy' },
-                      { id: 'pencil', label: 'Pencil' },
-                      { id: 'marker', label: 'Marker' },
-                      { id: 'airbrush', label: 'Airbrush' },
-                      { id: 'glow', label: 'Neon Glow' },
-                      { id: 'ink', label: 'Sumi Ink' },
-                      { id: 'charcoal', label: 'Charcoal' },
+                      { id: 'solid', label: 'Solid Monoline' },
+                      { id: 'calligraphy', label: 'Calligraphy Chisel' },
+                      { id: 'pencil', label: 'Graphite Pencil' },
+                      { id: 'marker', label: 'Highlighter Marker' },
+                      { id: 'airbrush', label: 'Airbrush Soft Mist' },
+                      { id: 'glow', label: 'Neon Glow Paint' },
                       { id: 'oil', label: 'Oil Impasto' },
-                      { id: 'watercolor', label: 'Watercolor' },
+                      { id: 'watercolor', label: 'Watercolor Flow' },
+                      { id: 'charcoal', label: 'Compressed Charcoal' },
+                      { id: 'spray', label: 'Spray Splatter' },
+                      { id: 'cold', label: 'Frost Crystalline' },
+                      { id: 'dry', label: 'Dry Bristle' },
+                      { id: 'smooth', label: 'Smooth Streamline' },
+                      { id: 'ink', label: 'Sumi-e Ink Bleed' },
                       { id: 'crayon', label: 'Wax Crayon' },
-                      { id: 'spray', label: 'Spray Paint' },
-                      { id: 'dotted', label: 'Dotted' },
-                      { id: 'dashed', label: 'Dashed' },
-                      { id: 'ribbon', label: 'Ribbon' },
+                      { id: 'dotted', label: 'Dotted Line' },
+                      { id: 'dashed', label: 'Dashed Line' },
+                      { id: 'ribbon', label: '3D Ribbon Band' },
                       { id: 'organic', label: 'Organic Foliage' },
-                    ].map(p => (
-                      <button
-                        key={p.id}
-                        type="button"
-                        onClick={() => {
-                          try {
-                            setBrushSettings(prev => ({ ...prev, brushType: p.id as any }));
-                          } catch (err) {
-                            console.error('Brush preset error:', err);
-                          }
-                        }}
-                        className={`text-[9px] py-1 px-1 rounded-lg font-bold border transition-all text-center truncate ${
-                          brushSettings.brushType === p.id
-                            ? 'bg-amber-500 text-neutral-950 border-amber-400 shadow-sm'
-                            : 'bg-neutral-900 hover:bg-neutral-800 text-neutral-300 border-neutral-800'
-                        }`}
-                      >
-                        {p.label}
-                      </button>
-                    ))}
+                    ].map(p => {
+                      const isSelected = brushSettings.brushType === p.id;
+                      return (
+                        <button
+                          key={p.id}
+                          type="button"
+                          onClick={() => {
+                            try {
+                              setBrushSettings(prev => ({ ...prev, brushType: p.id as any }));
+                            } catch (err) {
+                              console.error('Brush preset error:', err);
+                            }
+                          }}
+                          className={`w-full p-2 rounded-xl border-2 transition-all flex flex-col gap-1 cursor-pointer text-left ${
+                            isSelected
+                              ? 'bg-neutral-100 dark:bg-neutral-800 !border-black dark:!border-white ring-2 ring-black dark:ring-white shadow-none'
+                              : 'bg-white dark:bg-neutral-900 border-neutral-300 dark:border-neutral-700 hover:border-neutral-500 hover:bg-neutral-50 dark:hover:bg-neutral-850'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between w-full">
+                            <span className="text-xs font-black text-black dark:text-white leading-tight">
+                              {p.label}
+                            </span>
+                            {isSelected && (
+                              <span className="text-[9px] px-1.5 py-0.2 rounded bg-black text-white font-black tracking-wider uppercase">
+                                SELECTED
+                              </span>
+                            )}
+                          </div>
+                          <div className="w-full bg-white rounded p-1 border border-neutral-200 dark:border-neutral-800 flex items-center justify-center">
+                            <BrushStrokeIcon type={p.id} isActive={isSelected} className="w-full h-7" />
+                          </div>
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
 
@@ -2555,29 +2558,15 @@ function LeftPanel({
                   return (
                     <div
                       key={layer.id}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setActiveLayerId(layer.id);
-                      }}
-                      className={`flex flex-col p-3.5 rounded-2xl border-2 text-xs transition-all cursor-pointer relative overflow-hidden ${
+                      onClick={() => setActiveLayerId(layer.id)}
+                      className={`flex flex-col p-3 rounded-2xl border-2 text-xs transition-all cursor-pointer relative overflow-hidden layer-card-item ${
                         isActive
-                          ? 'bg-amber-500/15 border-amber-400 text-amber-200 font-bold shadow-[0_0_18px_rgba(245,158,11,0.25)] ring-1 ring-amber-400/50'
-                          : 'bg-neutral-950/90 border-neutral-800 hover:border-neutral-700 text-neutral-300 hover:bg-neutral-900'
+                          ? 'bg-amber-100 dark:bg-amber-500/15 border-black dark:border-amber-400 text-black dark:text-amber-200 font-bold ring-2 ring-black dark:ring-amber-400/50 shadow-none'
+                          : 'bg-white dark:bg-neutral-950/90 border-neutral-300 dark:border-neutral-800 hover:border-neutral-400 text-black dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-900'
                       }`}
                     >
-                      {isActive && (
-                        <div className="mb-2.5 flex items-center justify-between border-b-2 border-amber-500/30 pb-2">
-                          <span className="px-2.5 py-1 text-[10px] bg-amber-500 text-neutral-950 font-black rounded-lg uppercase tracking-wider flex items-center gap-1.5 shadow-sm">
-                            <span className="w-2 h-2 rounded-full bg-neutral-950 animate-pulse" />
-                            ACTIVE LAYER
-                          </span>
-                          <span className="text-xs text-amber-400 font-mono font-black">
-                            {itemCount} {itemCount === 1 ? 'drawing' : 'drawings'}
-                          </span>
-                        </div>
-                      )}
-
-                      <div className="flex items-center justify-between gap-2" onClick={(e) => e.stopPropagation()}>
+                      {/* Top Row: Layer Name strictly at the very top, bold, high opacity */}
+                      <div className="card-top-row flex items-center justify-between gap-2 mb-2 w-full">
                         {editingLayerId === layer.id ? (
                           <form
                             onSubmit={(e) => {
@@ -2598,7 +2587,7 @@ function LeftPanel({
                               type="text"
                               value={editingLayerName}
                               onChange={(e) => setEditingLayerName(e.target.value)}
-                              className="bg-neutral-900 border-2 border-amber-400 text-xs text-white rounded-xl px-2.5 py-1 focus:outline-none font-black w-full shadow-inner"
+                              className="bg-white dark:bg-neutral-900 border-2 border-black dark:border-amber-400 text-xs text-black dark:text-white rounded-xl px-2.5 py-1 focus:outline-none font-black w-full"
                               autoFocus
                               onClick={(e) => e.stopPropagation()}
                               onKeyDown={(e) => {
@@ -2619,39 +2608,46 @@ function LeftPanel({
                             />
                             <button
                               type="submit"
-                              className="text-emerald-400 hover:text-emerald-300 p-1.5 shrink-0 cursor-pointer"
+                              className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 p-1.5 shrink-0 cursor-pointer"
                               title="Save Layer Name"
                             >
                               <Check className="w-4.5 h-4.5 stroke-[2.4]" />
                             </button>
                           </form>
                         ) : (
-                          <div 
-                            className="flex items-center gap-2 truncate max-w-[170px] flex-1 cursor-pointer"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setActiveLayerId(layer.id);
-                            }}
-                          >
-                            <span className="truncate font-black text-sm text-white select-none">{layer.name}</span>
-                            {!isActive && (
-                              <span className="text-xs text-neutral-400 font-mono font-bold shrink-0">
-                                ({itemCount})
+                          <div className="flex items-center gap-2 flex-1 min-w-0">
+                            <span className="truncate font-black text-sm text-black dark:text-white select-none">{layer.name}</span>
+                            {isActive ? (
+                              <span className="px-2 py-0.5 text-[9px] bg-black text-white dark:bg-amber-500 dark:text-neutral-950 font-black rounded uppercase tracking-wider shrink-0">
+                                ACTIVE
+                              </span>
+                            ) : (
+                              <span className="text-xs text-neutral-600 dark:text-neutral-400 font-mono font-bold shrink-0">
+                                ({itemCount} {itemCount === 1 ? 'drawing' : 'drawings'})
                               </span>
                             )}
                           </div>
                         )}
-                        <div className="flex items-center gap-1.5">
+                        {isActive && (
+                          <span className="text-xs text-black dark:text-amber-400 font-mono font-black shrink-0">
+                            {itemCount} {itemCount === 1 ? 'drawing' : 'drawings'}
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Row 2: Action options distinctly separated in their own row so they never hide layer name */}
+                      <div className="card-actions-row flex items-center justify-between gap-1 pt-1.5 border-t border-neutral-200 dark:border-neutral-800/80 w-full" onClick={(e) => e.stopPropagation()}>
+                        <div className="flex items-center gap-1">
                           {/* Visibility Toggle */}
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
                               updateLayerProp(layer.id, { visible: !layer.visible });
                             }}
-                            className="p-1.5 rounded-xl hover:bg-neutral-850 text-neutral-300 hover:text-white cursor-pointer"
+                            className="card-action-btn w-7 h-7 flex items-center justify-center rounded-lg hover:bg-neutral-200 dark:hover:bg-neutral-800 text-black dark:text-neutral-300 border border-neutral-300 dark:border-neutral-700 cursor-pointer shrink-0"
                             title={layer.visible ? "Hide Layer Drawings" : "Show Layer Drawings"}
                           >
-                            {layer.visible ? <Eye className="w-4.5 h-4.5 stroke-[2.2] text-neutral-200" /> : <EyeOff className="w-4.5 h-4.5 stroke-[2.2] text-rose-500" />}
+                            {layer.visible ? <Eye className="w-4 h-4 stroke-[2.4] text-black dark:text-neutral-200" /> : <EyeOff className="w-4 h-4 stroke-[2.4] text-rose-600" />}
                           </button>
 
                           {/* Lock Toggle */}
@@ -2660,37 +2656,30 @@ function LeftPanel({
                               e.stopPropagation();
                               updateLayerProp(layer.id, { locked: !layer.locked });
                             }}
-                            className="p-1.5 rounded-xl hover:bg-neutral-850 text-neutral-300 hover:text-white cursor-pointer"
-                            title="Lock Layer"
+                            className="card-action-btn w-7 h-7 flex items-center justify-center rounded-lg hover:bg-neutral-200 dark:hover:bg-neutral-800 text-black dark:text-neutral-300 border border-neutral-300 dark:border-neutral-700 cursor-pointer shrink-0"
+                            title={layer.locked ? "Unlock Layer" : "Lock Layer"}
                           >
-                            {layer.locked ? <Lock className="w-4.5 h-4.5 stroke-[2.2] text-amber-500" /> : <Unlock className="w-4.5 h-4.5 stroke-[2.2] text-neutral-500" />}
+                            {layer.locked ? <Lock className="w-4 h-4 stroke-[2.4] text-rose-600" /> : <Unlock className="w-4 h-4 stroke-[2.4] text-black dark:text-neutral-400" />}
                           </button>
 
                           {/* Move Up/Down */}
                           <button
                             onClick={(e) => moveLayer(layers.findIndex(l => l.id === layer.id), 'up', e)}
-                            className="p-1 px-1.5 rounded-lg hover:bg-neutral-800 text-xs font-black text-neutral-300 hover:text-white cursor-pointer"
+                            className="card-action-btn w-7 h-7 flex items-center justify-center rounded-lg hover:bg-neutral-200 dark:hover:bg-neutral-800 text-xs font-black text-black dark:text-neutral-300 border border-neutral-300 dark:border-neutral-700 cursor-pointer shrink-0"
                             title="Move Up"
                           >
                             ▲
                           </button>
                           <button
                             onClick={(e) => moveLayer(layers.findIndex(l => l.id === layer.id), 'down', e)}
-                            className="p-1 px-1.5 rounded-lg hover:bg-neutral-800 text-xs font-black text-neutral-300 hover:text-white cursor-pointer"
+                            className="card-action-btn w-7 h-7 flex items-center justify-center rounded-lg hover:bg-neutral-200 dark:hover:bg-neutral-800 text-xs font-black text-black dark:text-neutral-300 border border-neutral-300 dark:border-neutral-700 cursor-pointer shrink-0"
                             title="Move Down"
                           >
                             ▼
                           </button>
+                        </div>
 
-                          {/* Delete Layer */}
-                          <button
-                            onClick={(e) => handleDeleteLayer(layer.id, e)}
-                            className="p-1.5 rounded-xl hover:bg-neutral-800 text-neutral-400 hover:text-rose-400 cursor-pointer"
-                            title="Delete Layer"
-                          >
-                            <Trash2 className="w-4.5 h-4.5 stroke-[2.2]" />
-                          </button>
-
+                        <div className="flex items-center gap-1">
                           {/* Edit / Rename Layer Icon */}
                           {editingLayerId !== layer.id && (
                             <button
@@ -2701,15 +2690,24 @@ function LeftPanel({
                                 setEditingLayerName(layer.name);
                               }}
                               className="p-1.5 text-neutral-300 hover:text-amber-400 transition-colors rounded-xl hover:bg-neutral-800 shrink-0 cursor-pointer"
-                              title="Edit Layer Name"
+                              title="Rename Layer"
                             >
-                              <Edit2 className="w-4.5 h-4.5 stroke-[2.2]" />
+                              <Edit2 className="w-4 h-4 stroke-[2.4]" />
                             </button>
                           )}
+
+                          {/* Delete Layer */}
+                          <button
+                            onClick={(e) => handleDeleteLayer(layer.id, e)}
+                            className="p-1.5 rounded-xl hover:bg-neutral-800 text-neutral-400 hover:text-rose-400 cursor-pointer"
+                            title="Delete Layer"
+                          >
+                            <Trash2 className="w-4 h-4 stroke-[2.4]" />
+                          </button>
                         </div>
                       </div>
 
-                      {/* Opacity & Blur & 3D Depth sliders */}
+                      {/* Row 3: Vertically expandable layer properties (Opacity, Blur, 3D Depth) */}
                       {isActive && (
                         <div className="mt-2.5 pt-2 border-t border-amber-500/20 space-y-2 text-[10px]">
                           {/* Opacity */}

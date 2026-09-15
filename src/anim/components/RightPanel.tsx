@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 const EMPTY_ARRAY: any[] = [];
 import CustomColorPicker from './CustomColorPicker';
+import { BrushStrokeIcon } from './BrushStrokeIcons';
 import PNGDeepEditBar from './PNGDeepEditBar';
 import { 
   isolateAndExtractPNGPart, 
@@ -1788,18 +1789,28 @@ function RightPanel({
   };
 
   // AI Smooth Motion & Loop Generator handlers
-  const [hasBackup, setHasBackup] = useState(!!localStorage.getItem('generator_original_frames_backup'));
+  const [hasBackup, setHasBackup] = useState(() => {
+    try {
+      return typeof window !== 'undefined' && !!window.localStorage && !!localStorage.getItem('generator_original_frames_backup');
+    } catch {
+      return false;
+    }
+  });
 
   const handleRestoreBackup = () => {
-    const backup = localStorage.getItem('generator_original_frames_backup');
-    if (backup) {
-      const parsed = JSON.parse(backup);
-      setFrames(parsed);
-      if (parsed[0]) {
-        setObjects(parsed[0].objects);
+    try {
+      const backup = localStorage.getItem('generator_original_frames_backup');
+      if (backup) {
+        const parsed = JSON.parse(backup);
+        setFrames(parsed);
+        if (parsed[0]) {
+          setObjects(parsed[0].objects);
+        }
+        setCurrentFrameIndex(0);
+        alert("Successfully restored original reference frames!");
       }
-      setCurrentFrameIndex(0);
-      alert("Successfully restored original reference frames!");
+    } catch (e) {
+      console.warn("Storage restore error", e);
     }
   };
 
@@ -1847,8 +1858,12 @@ function RightPanel({
     }
 
     // Save backup first
-    localStorage.setItem('generator_original_frames_backup', JSON.stringify(frames));
-    setHasBackup(true);
+    try {
+      localStorage.setItem('generator_original_frames_backup', JSON.stringify(frames));
+      setHasBackup(true);
+    } catch (e) {
+      console.warn('Storage backup note:', e);
+    }
 
     const startFrameObjects = frames[startIdx].objects;
     const endFrameObjects = frames[endIdx].objects;
@@ -2038,8 +2053,12 @@ function RightPanel({
     const M = refEnd - refStart + 1;
 
     // Save backup first
-    localStorage.setItem('generator_original_frames_backup', JSON.stringify(frames));
-    setHasBackup(true);
+    try {
+      localStorage.setItem('generator_original_frames_backup', JSON.stringify(frames));
+      setHasBackup(true);
+    } catch (e) {
+      console.warn('Storage backup note:', e);
+    }
 
     const startFrameObjects = frames[refStart].objects;
     const endFrameObjects = frames[endPosIdx].objects;
@@ -3184,16 +3203,16 @@ function RightPanel({
           transform: 'translateY(-50%)',
           zIndex: 100,
         }}
-        className="pointer-events-auto w-10 sm:w-11 h-28 sm:h-32 bg-neutral-900 hover:bg-amber-500 border-2 border-r-0 border-amber-500/80 hover:border-amber-400 rounded-l-2xl flex flex-col items-center justify-center text-amber-400 hover:text-neutral-950 transition-all cursor-pointer shadow-2xl group select-none"
+        className="pointer-events-auto w-10 sm:w-11 h-28 sm:h-32 bg-white hover:bg-neutral-100 border border-r-0 border-neutral-200 rounded-l-2xl flex flex-col items-center justify-center text-black transition-all cursor-pointer shadow-md group select-none"
         title={open ? "Close Properties Panel" : "Open Properties Panel"}
         aria-label="Toggle Properties Panel"
       >
         {open ? (
-          <ChevronRight className="w-6 h-6 stroke-[3] transition-transform group-hover:translate-x-0.5" />
+          <ChevronRight className="w-6 h-6 stroke-[3] transition-transform group-hover:translate-x-0.5 text-black" />
         ) : (
-          <ChevronLeft className="w-6 h-6 stroke-[3] transition-transform group-hover:-translate-x-0.5" />
+          <ChevronLeft className="w-6 h-6 stroke-[3] transition-transform group-hover:-translate-x-0.5 text-black" />
         )}
-        <span className="text-[10px] font-black uppercase tracking-wider mt-1 opacity-90 group-hover:opacity-100 [writing-mode:vertical-lr] rotate-180">
+        <span className="text-[10px] font-black uppercase tracking-wider mt-1 text-black [writing-mode:vertical-lr] rotate-180">
           {open ? 'CLOSE' : 'PROPS'}
         </span>
       </button>
@@ -3204,20 +3223,20 @@ function RightPanel({
           open ? 'w-80' : 'w-0'
         }`}
       >
-        <div className={`pointer-events-auto w-full h-full bg-neutral-900/95 border-l-2 border-neutral-800 flex flex-col overflow-hidden box-border min-w-0 ${
+        <div className={`pointer-events-auto w-full h-full bg-white border-l border-neutral-200 flex flex-col overflow-hidden box-border min-w-0 text-black ${
           open ? 'w-80' : 'w-0 border-l-0'
         }`}>
         {open && (
-        <div className="flex-1 flex flex-col h-full overflow-hidden select-none font-semibold w-full box-border min-w-0">
+        <div className="flex-1 flex flex-col h-full overflow-hidden select-none font-semibold w-full box-border min-w-0 bg-white text-black">
           {/* Header */}
-          <div className="h-16 border-b-2 border-neutral-800 flex items-center justify-between px-4 shrink-0 w-full box-border min-w-0">
-            <span className="text-sm uppercase tracking-widest font-black text-neutral-100 flex items-center gap-2 truncate min-w-0">
+          <div className="h-16 border-b border-neutral-200 flex items-center justify-between px-4 shrink-0 w-full box-border min-w-0 bg-white">
+            <span className="text-sm uppercase tracking-widest font-black text-black flex items-center gap-2 truncate min-w-0">
               <Settings className="w-5 h-5 text-amber-500 shrink-0 stroke-[2.4]" />
               PROPERTIES PANEL
             </span>
             <button
               onClick={() => setOpen(false)}
-              className="p-2 rounded-xl border-2 border-neutral-800 hover:border-neutral-700 hover:bg-neutral-850 text-neutral-400 hover:text-rose-400 transition-all lg:hidden shrink-0 cursor-pointer"
+              className="p-2 rounded-xl bg-white hover:bg-neutral-100 text-black transition-all lg:hidden shrink-0 cursor-pointer border-0 shadow-sm"
               title="Close Sidebar"
             >
               <ChevronRight className="w-5 h-5 stroke-[2.4]" />
@@ -12413,14 +12432,18 @@ function RightPanel({
                   <span className="text-[10px] text-amber-400 font-extrabold uppercase tracking-wide block">
                     Select Vector Brush Style
                   </span>
-                  <div className="flex flex-col gap-2">
+                  <div className="flex flex-col gap-2.5 w-full">
                     {[
-                      { id: 'solid', label: 'Solid Monoline', desc: 'Clean vector pen' },
+                      { id: 'solid', label: 'Solid Monoline', desc: 'Clean vector pen stroke' },
                       { id: 'calligraphy', label: 'Calligraphy Chisel', desc: 'Chisel nib stroke' },
-                      { id: 'pencil', label: 'Pencil Sketch', desc: 'Textured graphite' },
-                      { id: 'marker', label: 'Marker Highlighter', desc: 'Translucent marker' },
-                      { id: 'airbrush', label: 'Airbrush Spray', desc: 'Soft gradient glow' },
-                      { id: 'glow', label: ' Glow Paint (Neon Aura)', desc: 'Neon glowing aura spray / paint' },
+                      { id: 'pencil', label: 'Pencil Sketch', desc: 'Textured graphite core' },
+                      { id: 'marker', label: 'Marker Highlighter', desc: 'Broad translucent marker' },
+                      { id: 'airbrush', label: 'Airbrush Spray', desc: 'Soft diffused mist' },
+                      { id: 'glow', label: 'Neon Glow Aura', desc: 'Luminescent aura paint' },
+                      { id: 'oil', label: 'Oil Impasto', desc: 'Thick textured oil brush' },
+                      { id: 'watercolor', label: 'Watercolor Flow', desc: 'Fluid watercolor wash' },
+                      { id: 'spray', label: 'Spray Paint', desc: 'Scattered paint splatter' },
+                      { id: 'charcoal', label: 'Charcoal Texture', desc: 'Deep compressed charcoal' },
                     ].map((b) => {
                       const isActive = (brushSettings.brushType || 'solid') === b.id;
                       return (
@@ -12428,17 +12451,25 @@ function RightPanel({
                           key={b.id}
                           type="button"
                           onClick={() => setBrushSettings(prev => ({ ...prev, brushType: b.id as any }))}
-                          className={`p-2.5 rounded-xl text-left border transition-all flex items-center justify-between cursor-pointer ${
+                          className={`w-full p-2.5 rounded-xl border-2 transition-all flex flex-col gap-1.5 cursor-pointer text-left ${
                             isActive
-                              ? 'bg-amber-500/20 border-amber-400 text-amber-300 shadow-md font-extrabold'
-                              : 'bg-neutral-900/80 border-neutral-800 text-neutral-400 hover:text-white hover:bg-neutral-800 font-semibold'
+                              ? 'bg-neutral-100 dark:bg-neutral-800 !border-black dark:!border-white ring-2 ring-black dark:ring-white shadow-none'
+                              : 'bg-white dark:bg-neutral-900 border-neutral-300 dark:border-neutral-700 hover:border-neutral-500 hover:bg-neutral-50 dark:hover:bg-neutral-850'
                           }`}
                         >
-                          <div>
-                            <div className="text-[11px] leading-tight font-bold">{b.label}</div>
-                            <div className="text-[9px] opacity-70 font-normal leading-none mt-0.5">{b.desc}</div>
+                          <div className="flex items-center justify-between w-full">
+                            <span className="text-xs font-black text-black dark:text-white leading-tight">
+                              {b.label}
+                            </span>
+                            {isActive && (
+                              <span className="text-[9px] px-2 py-0.5 rounded bg-black text-white font-black tracking-wider uppercase">
+                                SELECTED
+                              </span>
+                            )}
                           </div>
-                          {isActive && <span className="text-[10px] text-amber-400 font-black">SELECTED</span>}
+                          <div className="w-full bg-white rounded-lg p-1 border border-neutral-200 dark:border-neutral-800 flex items-center justify-center">
+                            <BrushStrokeIcon type={b.id} isActive={isActive} className="w-full h-8" />
+                          </div>
                         </button>
                       );
                     })}

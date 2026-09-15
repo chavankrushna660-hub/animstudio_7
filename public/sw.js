@@ -1,58 +1,18 @@
-// AnimaStudio Progressive Web App (PWA) Service Worker
-const CACHE_NAME = 'animastudio-cache-v1';
-const ASSETS_TO_CACHE = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-  '/favicon.ico',
-  '/favicon.svg',
-  '/logo.svg',
-  '/logo.png',
-  '/icon-192.png',
-  '/icon-512.png',
-  '/apple-touch-icon.png'
-];
-
+// Service Worker auto-cleanup & unregister
 self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS_TO_CACHE).catch((err) => {
-        console.warn('PWA service worker precache note:', err);
-      });
-    })
-  );
   self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) => {
-      return Promise.all(
-        keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))
-      );
+      return Promise.all(keys.map((key) => caches.delete(key)));
+    }).then(() => {
+      return self.registration.unregister();
     })
   );
   self.clients.claim();
 });
 
-self.addEventListener('fetch', (event) => {
-  if (event.request.mode === 'navigate') {
-    event.respondWith(
-      fetch(event.request).catch(() => {
-        return caches.match('/index.html');
-      })
-    );
-    return;
-  }
+// Do NOT intercept any fetch requests so the app loads directly from the live network / Vite
 
-  event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      if (cachedResponse) {
-        return cachedResponse;
-      }
-      return fetch(event.request).catch((err) => {
-        return caches.match(event.request);
-      });
-    })
-  );
-});

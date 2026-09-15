@@ -32,6 +32,7 @@ import {
   Tv,
   Info,
   AlertCircle,
+  Smartphone,
   X
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
@@ -828,9 +829,41 @@ export default function App() {
     });
   };
 
+  // Safe Storage helpers protecting against iframe sandbox security exceptions
+  const safeStorageGet = (key: string): string | null => {
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        return window.localStorage.getItem(key);
+      }
+    } catch (e) {
+      console.warn('Storage read blocked/unavailable', e);
+    }
+    return null;
+  };
+
+  const safeStorageSet = (key: string, val: string): void => {
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        window.localStorage.setItem(key, val);
+      }
+    } catch (e) {
+      console.warn('Storage write blocked/unavailable', e);
+    }
+  };
+
+  const safeStorageRemove = (key: string): void => {
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        window.localStorage.removeItem(key);
+      }
+    } catch (e) {
+      console.warn('Storage remove blocked/unavailable', e);
+    }
+  };
+
   // Simple Authentication & Animation Database states
   const [currentUser, setCurrentUser] = useState<string | null>(() => {
-    return localStorage.getItem('animastudio_current_user');
+    return safeStorageGet('animastudio_current_user');
   });
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isSavedAnimationsModalOpen, setIsSavedAnimationsModalOpen] = useState(false);
@@ -844,13 +877,13 @@ export default function App() {
   
   // Theme states (default to light mode)
   const [theme, setTheme] = useState<'dark' | 'light'>(() => {
-    return (localStorage.getItem('animastudio_theme') as 'dark' | 'light') || 'light';
+    return (safeStorageGet('animastudio_theme') as 'dark' | 'light') || 'light';
   });
 
   const toggleTheme = () => {
     const next = theme === 'dark' ? 'light' : 'dark';
     setTheme(next);
-    localStorage.setItem('animastudio_theme', next);
+    safeStorageSet('animastudio_theme', next);
   };
   const limitTimeoutRef = useRef<any>(null);
 
@@ -1345,7 +1378,7 @@ export default function App() {
     const res = validateSimpleAuth(authEmail, authPassword);
     if (res.success) {
       const normalizedEmail = authEmail.trim().toLowerCase();
-      localStorage.setItem('animastudio_current_user', normalizedEmail);
+      safeStorageSet('animastudio_current_user', normalizedEmail);
       setCurrentUser(normalizedEmail);
       setIsAuthModalOpen(false);
       setAuthPassword('');
@@ -1375,7 +1408,7 @@ export default function App() {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('animastudio_current_user');
+    safeStorageRemove('animastudio_current_user');
     setCurrentUser(null);
     setSavedRecord(null);
     setIsProfileDropdownOpen(false);
@@ -3458,11 +3491,11 @@ export default function App() {
   };
 
   const copyFrame = (index: number) => {
-    localStorage.setItem('copied_frame_data', JSON.stringify(frames[index].objects));
+    safeStorageSet('copied_frame_data', JSON.stringify(frames[index].objects));
   };
 
   const pasteFrame = (index: number) => {
-    const data = localStorage.getItem('copied_frame_data');
+    const data = safeStorageGet('copied_frame_data');
     if (data) {
       const parsed = safeJsonParse(data);
       if (!parsed) return;
@@ -3924,20 +3957,23 @@ export default function App() {
     reader.readAsDataURL(file);
   };
 
-  const isPortrait = windowSize.height > windowSize.width;
-  const isMobile = windowSize.width < 1200 || isPortrait;
+  const safeWidth = Math.max(windowSize?.width || (typeof window !== 'undefined' ? window.innerWidth : 1280), 320);
+  const safeHeight = Math.max(windowSize?.height || (typeof window !== 'undefined' ? window.innerHeight : 800), 320);
+  const isPortrait = safeHeight > safeWidth;
+  const isMobile = safeWidth < 1200 || isPortrait;
   // Very slight overall app scale boost as requested ("increase size of app scale the entire app, very little bit, not every button and tools one by one first entire app scale it")
   const APP_SCALE_FACTOR = 1.04;
   const targetWidth = isPortrait ? 815 : 1230;
-  const scale = (isMobile ? (windowSize.width / targetWidth) : 1) * APP_SCALE_FACTOR;
+  const rawScale = isMobile ? (safeWidth / targetWidth) : 1;
+  const scale = Math.max(0.2, (rawScale || 1) * APP_SCALE_FACTOR);
 
   if (typeof window !== 'undefined') {
     (window as any).__appScale = scale;
   }
 
   const containerStyle: React.CSSProperties = {
-    width: `${(isMobile ? targetWidth : windowSize.width) / APP_SCALE_FACTOR}px`,
-    height: `${windowSize.height / scale}px`,
+    width: `${(isMobile ? targetWidth : safeWidth) / APP_SCALE_FACTOR}px`,
+    height: `${safeHeight / scale}px`,
     transform: `scale(${scale})`,
     transformOrigin: 'top left',
     position: 'absolute',

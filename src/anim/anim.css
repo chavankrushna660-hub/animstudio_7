@@ -38,17 +38,43 @@
   --s1: #ffffff;   /* Pure solid white panels */
   --s2: #ffffff;   /* Pure solid white cards & components */
   --s3: #f8fafc;   /* Slight hover state */
-  --brd: #e2e8f0;  /* Clean light border */
-  --txt: #0f172a;  /* High-contrast crisp text */
-  --txt2: #475569; /* Secondary labels */
-  --accent: #f4f4f5;        /* Dark white / off-white button */
+  --brd: #000000;  /* High contrast solid dark border */
+  --txt: #000000;  /* Crisp pitch black text */
+  --txt2: #1e293b; /* Secondary dark text */
+  --accent: #f4f4f5;        /* Light neutral button */
   --accent-hover: #e4e4e7;  /* Hover state */
-  --accent-txt: #09090b;    /* Crisp dark text */
+  --accent-txt: #000000;    /* Crisp pitch black text */
   --active: #e4e4e7;        /* Active state */
-  --active-txt: #09090b;    /* Active text */
+  --active-txt: #000000;    /* Active text */
   --danger: #dc2626;
   background: #ffffff !important;
-  color: var(--txt);
+  color: #000000 !important;
+}
+
+#anim-root.light-theme,
+#anim-root.light-theme * {
+  color: #000000;
+  border-color: #cbd5e1;
+}
+
+#anim-root.light-theme span,
+#anim-root.light-theme p,
+#anim-root.light-theme label,
+#anim-root.light-theme button,
+#anim-root.light-theme input,
+#anim-root.light-theme select,
+#anim-root.light-theme h1,
+#anim-root.light-theme h2,
+#anim-root.light-theme h3,
+#anim-root.light-theme h4 {
+  color: #000000 !important;
+  opacity: 1 !important;
+  font-weight: 700 !important;
+}
+
+#anim-root.light-theme svg:not(.text-rose-500):not(.text-rose-600):not(.text-emerald-400):not(.text-emerald-600) {
+  color: #000000 !important;
+  stroke: #000000 !important;
 }
 
 /* ---------- 1. Neutralise every legacy colour utility ---------- */
@@ -56,8 +82,8 @@
   background-image: none !important;
 }
 
-#anim-root [class*="bg-amber"],
-#anim-root [class*="bg-yellow"],
+#anim-root [class*="bg-amber"]:not(.active-tool-btn):not(.timeline-active-btn):not([data-active-tool]):not(.brush-preset-btn):not(.active-brush-card),
+#anim-root [class*="bg-yellow"]:not(.active-tool-btn):not(.timeline-active-btn):not([data-active-tool]):not(.brush-preset-btn):not(.active-brush-card),
 #anim-root [class*="bg-emerald"],
 #anim-root [class*="bg-green"],
 #anim-root [class*="bg-lime"],
@@ -80,6 +106,37 @@
   background-color: var(--s2) !important;
   border-color: var(--brd) !important;
   color: var(--txt) !important;
+}
+
+/* Active Tools & Timeline Buttons Yellow Styling - Guaranteed with ZERO glow */
+#anim-root .active-tool-btn,
+#anim-root button.active-tool-btn,
+#anim-root [data-active-tool="true"],
+#anim-root .timeline-active-btn,
+#anim-root button.timeline-active-btn {
+  background-color: #facc15 !important;
+  background: #facc15 !important;
+  border-color: #000000 !important;
+  color: #000000 !important;
+  box-shadow: none !important;
+  filter: none !important;
+}
+
+#anim-root .active-tool-btn *,
+#anim-root button.active-tool-btn *,
+#anim-root [data-active-tool="true"] *,
+#anim-root .timeline-active-btn *,
+#anim-root button.timeline-active-btn * {
+  color: #000000 !important;
+  stroke: #000000 !important;
+}
+
+#anim-root .active-tool-btn span,
+#anim-root button.active-tool-btn span,
+#anim-root .timeline-active-btn span,
+#anim-root button.timeline-active-btn span {
+  color: #000000 !important;
+  font-weight: 900 !important;
 }
 
 #anim-root [class*="bg-neutral-900"],
@@ -440,12 +497,12 @@
 
 /* =========================================================
    USER MANDATES:
-   1. Bold text across entire app
-   2. Left and right panels borders: bold black with 60% opacity
-   3. Shadow should be ONLY very little, 0.5px
-   4. All left panel and right panel components, text, and buttons strictly in one straight line vertically
-   5. Any button strictly CANNOT go out of that panel
-   6. Elements strictly should NOT overlap in straight direction
+   1. Toolbar: NO background (transparent), with an extremely light, subtle, almost negligible border (1px solid rgba(0, 0, 0, 0.08)) on components/buttons.
+   2. Timeline: White background on all components, with an extremely light, subtle, almost negligible border (1px solid rgba(0, 0, 0, 0.08)) on components and buttons.
+   3. Right Panel & Left Panel: White background, with an extremely light, subtle, almost negligible border (1px solid rgba(0, 0, 0, 0.08)) on all elements, buttons, inputs, and cards.
+   4. STRICTLY Left & Right Panels: Text size increased and made bolder (font-weight 800-900). Elements expand naturally according to text without escaping the panels.
+   5. Active tools/buttons: Yellow highlight without glow.
+   6. Zoom tool: Kept as a single tool without separate popups/options.
    ========================================================= */
 
 #anim-root,
@@ -453,70 +510,224 @@
   font-weight: 700 !important;
 }
 
-/* Borders: Bold black at 60% opacity with very little 0.5px shadow */
-#left-layers-panel-container,
+/* 1. TOOLBAR: TRANSPARENT BACKGROUND & VERY LIGHT SUBTLE BORDER (1px) */
+#anim-toolbar-container {
+  background: transparent !important;
+  background-color: transparent !important;
+  border-right: 1px solid rgba(0, 0, 0, 0.08) !important;
+  box-shadow: none !important;
+}
+
+#anim-toolbar-container button {
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  box-shadow: none !important;
+}
+
+/* 2. TIMELINE: WHITE BACKGROUND & VERY LIGHT SUBTLE BORDER ON ALL COMPONENTS */
+#anim-timeline-container {
+  border-top: 1px solid rgba(0, 0, 0, 0.08) !important;
+  box-shadow: none !important;
+}
+
+#anim-timeline-container,
+#anim-timeline-container > div,
+#anim-timeline-container [class*="bg-neutral"],
+#anim-timeline-container [class*="bg-slate"],
+#anim-timeline-container [class*="bg-zinc"],
+#anim-timeline-container [class*="bg-gray"],
+#autoframes-downside-options {
+  background-color: #ffffff !important;
+  background: #ffffff !important;
+  color: #000000 !important;
+}
+
+/* Components and buttons inside timeline get very light, subtle border */
+#anim-timeline-container [class*="rounded-"]:not(span):not(svg),
+#anim-timeline-container button,
+#anim-timeline-container input,
+#anim-timeline-container select,
+#autoframes-downside-options {
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  box-shadow: none !important;
+}
+
+/* 3. RIGHT PANEL & LEFT PANEL: WHITE BACKGROUND & VERY LIGHT SUBTLE BORDER ON ALL ELEMENTS */
 #left-layers-panel-container > div,
-#left-layers-panel-container [class*="rounded-"],
-#left-layers-panel-container [class*="rounded-2xl"],
-#left-layers-panel-container [class*="rounded-xl"],
-#left-layers-panel-container [class*="rounded-lg"],
-#left-layers-panel-container [class*="rounded-md"],
-#left-layers-panel-container button,
-#left-layers-panel-container input,
-#left-layers-panel-container select,
-#left-layers-panel-container textarea,
-#left-layers-panel-container [class*="border"],
-#right-properties-panel-container,
-#right-properties-panel-container > div,
-#right-properties-panel-container [class*="rounded-"],
-#right-properties-panel-container [class*="rounded-2xl"],
-#right-properties-panel-container [class*="rounded-xl"],
-#right-properties-panel-container [class*="rounded-lg"],
-#right-properties-panel-container [class*="rounded-md"],
+#right-properties-panel-container > div {
+  background-color: #ffffff !important;
+  background: #ffffff !important;
+  color: #000000 !important;
+}
+
+#left-layers-panel-container > div {
+  border-right: 1px solid rgba(0, 0, 0, 0.08) !important;
+  box-shadow: none !important;
+}
+
+#right-properties-panel-container > div {
+  border-left: 1px solid rgba(0, 0, 0, 0.08) !important;
+  box-shadow: none !important;
+}
+
+/* All elements in Right Panel and Left Panel: cards, inputs, selects, buttons, containers */
+#right-properties-panel-container [class*="rounded-"]:not(span):not(svg):not(.card-actions-row),
 #right-properties-panel-container button,
 #right-properties-panel-container input,
 #right-properties-panel-container select,
 #right-properties-panel-container textarea,
-#right-properties-panel-container [class*="border"],
-#left-panel-toggle-btn,
-#right-panel-toggle-btn {
-  border-color: rgba(0, 0, 0, 0.6) !important;
-}
-
-#left-layers-panel-container [class*="rounded-"],
-#left-layers-panel-container button:not(#left-panel-toggle-btn),
+#right-properties-panel-container .drawing-card-item,
+#right-properties-panel-container .layer-card-item,
+#left-layers-panel-container [class*="rounded-"]:not(span):not(svg):not(.card-actions-row),
+#left-layers-panel-container button,
 #left-layers-panel-container input,
 #left-layers-panel-container select,
-#right-properties-panel-container [class*="rounded-"],
-#right-properties-panel-container button:not(#right-panel-toggle-btn),
-#right-properties-panel-container input,
-#right-properties-panel-container select {
-  border-width: 2.5px !important;
-  border-style: solid !important;
-  border-color: rgba(0, 0, 0, 0.6) !important;
-  box-shadow: 0 0 0.5px rgba(0, 0, 0, 0.6) !important;
+#left-layers-panel-container textarea,
+#left-layers-panel-container .drawing-card-item,
+#left-layers-panel-container .layer-card-item {
+  background-color: #ffffff !important;
+  background: #ffffff !important;
+  color: #000000 !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  box-shadow: none !important;
 }
 
+/* Headers inside panels */
+#left-layers-panel-container .h-16,
+#right-properties-panel-container .h-16 {
+  background-color: #ffffff !important;
+  background: #ffffff !important;
+  color: #000000 !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Toggle handles for left and right panels */
 #left-panel-toggle-btn,
 #right-panel-toggle-btn {
-  border-width: 2.5px !important;
+  background-color: #ffffff !important;
+  background: #ffffff !important;
+  color: #000000 !important;
+  border-width: 1px !important;
   border-style: solid !important;
-  border-color: rgba(0, 0, 0, 0.6) !important;
-  box-shadow: 0 0 0.5px rgba(0, 0, 0, 0.6) !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05) !important;
 }
 
-#left-layers-panel-container > div {
-  border-right-width: 2.5px !important;
-  border-right-style: solid !important;
-  border-right-color: rgba(0, 0, 0, 0.6) !important;
-  box-shadow: 0.5px 0 0.5px rgba(0, 0, 0, 0.6) !important;
+#left-panel-toggle-btn *,
+#right-panel-toggle-btn * {
+  color: #000000 !important;
+  stroke: #000000 !important;
 }
 
-#right-properties-panel-container > div {
-  border-left-width: 2.5px !important;
-  border-left-style: solid !important;
-  border-left-color: rgba(0, 0, 0, 0.6) !important;
-  box-shadow: -0.5px 0 0.5px rgba(0, 0, 0, 0.6) !important;
+/* 4. ALL BUTTONS GLOBALLY: WHITE BACKGROUND */
+#anim-root button:not(.active-tool-btn):not(.timeline-active-btn):not([data-active-tool="true"]):not(#timeline-add-frame-btn) {
+  background-color: #ffffff !important;
+  background: #ffffff !important;
+  color: #000000 !important;
+}
+
+#anim-root button:hover:not(.active-tool-btn):not(.timeline-active-btn):not([data-active-tool="true"]):not(#timeline-add-frame-btn) {
+  background-color: #f4f4f5 !important;
+  background: #f4f4f5 !important;
+  color: #000000 !important;
+}
+
+#anim-root button svg:not(.text-rose-500):not(.text-rose-600):not(.text-emerald-400):not(.text-emerald-600) {
+  color: #000000 !important;
+  stroke: #000000 !important;
+}
+
+/* 5. ACTIVE BUTTONS / TOOLS: YELLOW BACKGROUND WITHOUT GLOW */
+#anim-root .active-tool-btn,
+#anim-root button.active-tool-btn,
+#anim-root [data-active-tool="true"],
+#anim-root .timeline-active-btn,
+#anim-root button.timeline-active-btn {
+  background-color: #facc15 !important;
+  background: #facc15 !important;
+  color: #000000 !important;
+  border: 1px solid rgba(0, 0, 0, 0.12) !important;
+  box-shadow: none !important;
+  filter: none !important;
+}
+
+#timeline-add-frame-btn {
+  background-color: #fde047 !important;
+  background: #fde047 !important;
+  color: #000000 !important;
+  border: 1px solid rgba(0, 0, 0, 0.12) !important;
+  box-shadow: none !important;
+}
+
+/* =========================================================
+   6. STRICTLY LEFT & RIGHT PANELS:
+      - TEXT SIZE INCREASED
+      - BOLDER TYPOGRAPHY (FONT-WEIGHT 800 - 900)
+      - ELEMENTS EXPAND TO FIT TEXT CONTENT CLEANLY
+      - STRICT PANEL CONTAINMENT (CANNOT ESCAPE OR OVERFLOW)
+   ========================================================= */
+
+#left-layers-panel-container,
+#left-layers-panel-container *,
+#right-properties-panel-container,
+#right-properties-panel-container * {
+  font-weight: 800 !important;
+  box-sizing: border-box !important;
+}
+
+#left-layers-panel-container h1,
+#left-layers-panel-container h2,
+#left-layers-panel-container h3,
+#left-layers-panel-container h4,
+#left-layers-panel-container [class*="font-black"],
+#right-properties-panel-container h1,
+#right-properties-panel-container h2,
+#right-properties-panel-container h3,
+#right-properties-panel-container h4,
+#right-properties-panel-container [class*="font-black"] {
+  font-weight: 900 !important;
+}
+
+/* Scale up text classes strictly inside Left and Right panels */
+#left-layers-panel-container [class*="text-[8px]"],
+#left-layers-panel-container [class*="text-[9px]"],
+#left-layers-panel-container [class*="text-[10px]"],
+#right-properties-panel-container [class*="text-[8px]"],
+#right-properties-panel-container [class*="text-[9px]"],
+#right-properties-panel-container [class*="text-[10px]"] {
+  font-size: 12px !important;
+  line-height: 1.35 !important;
+}
+
+#left-layers-panel-container [class*="text-[11px]"],
+#left-layers-panel-container [class*="text-xs"],
+#right-properties-panel-container [class*="text-[11px]"],
+#right-properties-panel-container [class*="text-xs"] {
+  font-size: 13.5px !important;
+  line-height: 1.4 !important;
+}
+
+#left-layers-panel-container [class*="text-sm"],
+#right-properties-panel-container [class*="text-sm"] {
+  font-size: 15px !important;
+  line-height: 1.45 !important;
+}
+
+#left-layers-panel-container [class*="text-base"],
+#right-properties-panel-container [class*="text-base"] {
+  font-size: 17px !important;
+  line-height: 1.5 !important;
+}
+
+/* Generic text tags in left/right panels without explicit text-* class */
+#left-layers-panel-container span:not([class*="text-"]):not([writing-mode]),
+#left-layers-panel-container p:not([class*="text-"]),
+#left-layers-panel-container label:not([class*="text-"]),
+#left-layers-panel-container button:not([class*="text-"]),
+#right-properties-panel-container span:not([class*="text-"]),
+#right-properties-panel-container p:not([class*="text-"]),
+#right-properties-panel-container label:not([class*="text-"]),
+#right-properties-panel-container button:not([class*="text-"]) {
+  font-size: 13.5px;
 }
 
 /* Strict containment: Prevent any overflow or element escaping panels */
@@ -538,72 +749,121 @@
   max-width: 100% !important;
 }
 
-/* All components, text, and buttons strictly in one straight line vertically */
-#left-layers-panel-container .overflow-y-auto,
-#right-properties-panel-container .overflow-y-auto {
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: stretch !important;
-  overflow-x: hidden !important;
-  width: 100% !important;
-  gap: 12px !important;
+/* Elements expand height naturally to fit text without expanding beyond panel width */
+#left-layers-panel-container button:not(#left-panel-toggle-btn):not(.card-action-btn),
+#right-properties-panel-container button:not(#right-panel-toggle-btn):not(.card-action-btn),
+#left-layers-panel-container .drawing-card-item,
+#left-layers-panel-container .layer-card-item,
+#right-properties-panel-container .drawing-card-item,
+#right-properties-panel-container .layer-card-item {
+  min-height: fit-content !important;
+  height: auto !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  word-break: break-word !important;
+  overflow-wrap: break-word !important;
+  white-space: normal !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  box-shadow: none !important;
 }
 
-#left-layers-panel-container .overflow-y-auto > *,
-#right-properties-panel-container .overflow-y-auto > * {
-  width: 100% !important;
+#left-layers-panel-container input,
+#left-layers-panel-container select,
+#right-properties-panel-container input,
+#right-properties-panel-container select {
+  min-height: 34px !important;
+  height: auto !important;
+  box-sizing: border-box !important;
   max-width: 100% !important;
-  min-width: 0 !important;
+  padding-top: 4px !important;
+  padding-bottom: 4px !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+}
+
+/* High Opacity & Bold Typography Across Entire App */
+#anim-root,
+#anim-root * {
+  font-weight: 700 !important;
+}
+
+#anim-root span,
+#anim-root p,
+#anim-root label,
+#anim-root button,
+#anim-root input,
+#anim-root select,
+#anim-root h1, #anim-root h2, #anim-root h3, #anim-root h4 {
+  opacity: 1 !important;
+}
+
+/* Drawing cards and Layer cards: clean layout, names always at the top and visible */
+.drawing-card-item,
+.layer-card-item {
   display: flex !important;
   flex-direction: column !important;
-  align-items: stretch !important;
-  position: relative !important;
-  margin-left: 0 !important;
-  margin-right: 0 !important;
-  overflow: hidden !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.card-top-row {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  width: 100% !important;
+  min-width: 0 !important;
+}
+
+.card-actions-row {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  width: 100% !important;
+  flex-wrap: nowrap !important;
+  gap: 4px !important;
+}
+
+/* Strictly keep action buttons inside cards horizontal, compact, and aligned side-by-side */
+#left-layers-panel-container .card-actions-row button,
+#left-layers-panel-container .card-actions-row .card-action-btn,
+#right-properties-panel-container .card-actions-row button,
+#right-properties-panel-container .card-actions-row .card-action-btn {
+  width: 28px !important;
+  max-width: 28px !important;
+  min-width: 28px !important;
+  height: 28px !important;
+  max-height: 28px !important;
+  min-height: 28px !important;
+  padding: 2px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  border-radius: 6px !important;
+  box-shadow: none !important;
   flex-shrink: 0 !important;
-  gap: 8px !important;
+  margin: 0 !important;
+  white-space: nowrap !important;
+  background-color: #ffffff !important;
+  background: #ffffff !important;
+  color: #000000 !important;
 }
 
-/* Grids with buttons (e.g. grid-cols-2, grid-cols-3) strictly align in vertical line */
-#left-layers-panel-container .grid-cols-2,
-#left-layers-panel-container .grid-cols-3,
-#left-layers-panel-container .grid-cols-4,
-#right-properties-panel-container .grid-cols-2,
-#right-properties-panel-container .grid-cols-3,
-#right-properties-panel-container .grid-cols-4,
-#right-properties-panel-container .grid-cols-5 {
-  display: flex !important;
+/* Keep hierarchy tree item rows clean */
+#left-layers-panel-container .drawing-card-item .group\/item,
+#left-layers-panel-container .layer-card-item {
   flex-direction: column !important;
   align-items: stretch !important;
-  width: 100% !important;
-  max-width: 100% !important;
-  gap: 6px !important;
-}
-
-/* Action button rows in panels: stack vertically in a straight line */
-#left-layers-panel-container div[class*="flex items-center gap"]:has(> button:nth-child(2)),
-#right-properties-panel-container div[class*="flex items-center gap"]:has(> button:nth-child(2)),
-#left-layers-panel-container div[class*="flex gap"]:has(> button:nth-child(2)),
-#right-properties-panel-container div[class*="flex gap"]:has(> button:nth-child(2)) {
-  flex-direction: column !important;
-  align-items: stretch !important;
-  width: 100% !important;
-  gap: 6px !important;
-}
-
-/* Keep hierarchy tree item row items aligned horizontally so name and icons stay on the row */
-#left-layers-panel-container .group\/item,
-#left-layers-panel-container div[style*="paddingLeft"] {
-  flex-direction: row !important;
-  align-items: center !important;
   width: 100% !important;
   min-width: 0 !important;
 }
 
-#left-layers-panel-container .group\/item > div {
+#left-layers-panel-container .card-top-row,
+#left-layers-panel-container .card-actions-row {
   flex-direction: row !important;
   align-items: center !important;
+  width: 100% !important;
 }
 
 /* Header rows in panels keep title and close button in a clean row */
@@ -614,9 +874,9 @@
   width: 100% !important;
 }
 
-/* Any button strictly cannot go out of that panel or overlap */
-#left-layers-panel-container button:not(#left-panel-toggle-btn),
-#right-properties-panel-container button:not(#right-panel-toggle-btn) {
+/* Any large button strictly cannot go out of that panel or overlap */
+#left-layers-panel-container button:not(#left-panel-toggle-btn):not(.card-action-btn),
+#right-properties-panel-container button:not(#right-panel-toggle-btn):not(.card-action-btn) {
   max-width: 100% !important;
   box-sizing: border-box !important;
   overflow: hidden !important;
@@ -628,6 +888,7 @@
   margin-left: 0 !important;
   margin-right: 0 !important;
   flex-shrink: 0 !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
 }
 
 /* Ensure no negative margins causing overlaps */
@@ -635,3 +896,87 @@
 #right-properties-panel-container [class*="-m"] {
   margin: 0 !important;
 }
+
+/* =========================================================
+   THICKER & BIGGER TYPOGRAPHY ENHANCEMENT
+   All text bigger font size and thicker (very thicker and bigger)
+   ========================================================= */
+#anim-root {
+  font-weight: 800 !important;
+}
+
+#anim-root span,
+#anim-root p,
+#anim-root label,
+#anim-root button,
+#anim-root input,
+#anim-root select {
+  font-weight: 800 !important;
+  letter-spacing: -0.01em;
+}
+
+/* Make headings, titles, buttons and labels ultra-thick (900) and noticeably larger */
+#anim-root h1,
+#anim-root h2,
+#anim-root h3,
+#anim-root h4,
+#anim-root .font-black,
+#anim-root .font-bold,
+#anim-root button,
+#anim-root label,
+#anim-root strong {
+  font-weight: 900 !important;
+}
+
+/* Scale up text sizes across the app */
+#anim-root .text-\[8px\],
+#anim-root .text-\[9px\] {
+  font-size: 11.5px !important;
+  font-weight: 900 !important;
+  line-height: 1.3 !important;
+}
+
+#anim-root .text-\[10px\],
+#anim-root .text-\[11px\] {
+  font-size: 13px !important;
+  font-weight: 900 !important;
+  line-height: 1.3 !important;
+}
+
+#anim-root .text-xs {
+  font-size: 14px !important;
+  font-weight: 900 !important;
+  line-height: 1.35 !important;
+}
+
+#anim-root .text-sm {
+  font-size: 16px !important;
+  font-weight: 900 !important;
+  line-height: 1.35 !important;
+}
+
+#anim-root .text-base {
+  font-size: 18px !important;
+  font-weight: 900 !important;
+  line-height: 1.35 !important;
+}
+
+#anim-root .text-lg {
+  font-size: 20px !important;
+  font-weight: 900 !important;
+  line-height: 1.35 !important;
+}
+
+/* Tool buttons, panels, toolbar icons and labels */
+#anim-toolbar-container button span {
+  font-weight: 900 !important;
+}
+
+#anim-toolbar-container svg {
+  stroke-width: 3.2px !important;
+}
+
+#anim-toolbar-container button[data-active-tool="true"] svg {
+  stroke-width: 3.8px !important;
+}
+

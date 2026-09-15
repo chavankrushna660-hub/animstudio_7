@@ -1893,6 +1893,10 @@ function CanvasArea({
     const rawObj = objects[selectedObjectId];
     if (rawObj.isHidden || rawObj.isLocked) return null;
     const effLayerId = rawObj.layerId || (layers && layers[0] ? layers[0].id : 'layer_1');
+    // STRICT LAYER ISOLATION: Drawing ONLY interactable on its own layer
+    if (effLayerId !== activeLayerId) {
+      return null;
+    }
     const targetLayer = layers ? layers.find(l => l.id === effLayerId) : null;
     if (targetLayer && (targetLayer.locked || targetLayer.visible === false || targetLayer.opacity === 0 || (targetLayer as any).isHidden)) {
       return null;
@@ -1904,7 +1908,17 @@ function CanvasArea({
       }
     }
     return selectedObjectId;
-  }, [selectedObjectId, objects, layers]);
+  }, [selectedObjectId, objects, layers, activeLayerId]);
+
+  // Auto deselect when switching active layer
+  useEffect(() => {
+    if (selectedObjectId && objects[selectedObjectId]) {
+      const effLayerId = objects[selectedObjectId].layerId || (layers && layers[0] ? layers[0].id : 'layer_1');
+      if (effLayerId !== activeLayerId) {
+        setSelectedObjectId(null);
+      }
+    }
+  }, [activeLayerId, selectedObjectId, objects, setSelectedObjectId, layers]);
 
   const effectiveSelectedObjectId = (isRecording || isPlaying) ? null : targetDrawingId;
 
