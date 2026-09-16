@@ -615,17 +615,44 @@ input.color-hue-slider::-moz-range-track {
   font-weight: 700 !important;
 }
 
-/* 1. TOOLBAR: TRANSPARENT BACKGROUND & VERY LIGHT SUBTLE BORDER (1px) */
+/* 1. TOOLBAR: SOLID FIXED DOCK CONTAINER WITH CRISP VISIBLE BORDER (NEVER TRANSPARENT) */
 #anim-toolbar-container {
-  background: transparent !important;
-  background-color: transparent !important;
-  border-right: 1px solid rgba(0, 0, 0, 0.08) !important;
-  box-shadow: none !important;
+  background: var(--s1, #23272f) !important;
+  background-color: var(--s1, #23272f) !important;
+  border-right: 2px solid var(--brd, rgba(0, 0, 0, 0.15)) !important;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.06) !important;
+  z-index: 30 !important;
+  position: relative !important;
+  flex-shrink: 0 !important;
+}
+
+#anim-root.light-theme #anim-toolbar-container {
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  border-right: 2px solid #cbd5e1 !important;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05) !important;
 }
 
 #anim-toolbar-container button {
-  border: 1px solid rgba(0, 0, 0, 0.08) !important;
-  box-shadow: none !important;
+  border: 1.5px solid rgba(0, 0, 0, 0.12) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+}
+
+#anim-root.light-theme #anim-toolbar-container button {
+  border: 1.5px solid #cbd5e1 !important;
+  background-color: #ffffff !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+}
+
+#anim-root.light-theme #anim-toolbar-container button:hover {
+  background-color: #f1f5f9 !important;
+  border-color: #94a3b8 !important;
+}
+
+#anim-root.light-theme #anim-toolbar-container button[data-active-tool="true"] {
+  background-color: #facc15 !important;
+  border-color: #ca8a04 !important;
+  color: #000000 !important;
 }
 
 /* 2. TIMELINE: WHITE BACKGROUND & VERY LIGHT SUBTLE BORDER ON ALL COMPONENTS */
