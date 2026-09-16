@@ -1,0 +1,6 @@
+{
+  "name": "Animstudio",
+  "description": "Animstudio is a 2D and 3D vector animation studio with bone rigging, 3D stroke memory, liquify mesh deformer, keyframe timeline, and auto frames.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
