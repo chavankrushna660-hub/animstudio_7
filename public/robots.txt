@@ -4,12 +4,15 @@ Allow: /favicon.ico
 Allow: /favicon.svg
 Allow: /logo.svg
 Allow: /logo.png
+Allow: /logo-1024x1024.png
 Allow: /favicon-*.png
 Allow: /icon-*.png
 Allow: /apple-touch-icon*.png
 Allow: /site.webmanifest
 Allow: /manifest.json
 Allow: /sitemap.xml
+Allow: /llms.txt
+Allow: /llms-full.txt
 
 User-agent: Googlebot
 Allow: /
@@ -20,6 +23,10 @@ Allow: /
 User-agent: Googlebot-Favicon
 Allow: /
 
+User-agent: Bingbot
+Allow: /
+
+User-agent: Yandex
+Allow: /
+
 Sitemap: /sitemap.xml
-
-

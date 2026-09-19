@@ -1,15 +1,17 @@
 {
   "name": "Animstudio",
   "short_name": "Animstudio",
-  "description": "Powerful 2D and 3D animation web app with vector rigging, bone animation, 3D stroke memory, liquify mesh deformer, smart transforms, and timeline keyframing.",
+  "description": "Animstudio is a powerful 2D and 3D vector animation web app, character cartoon maker, and online alternative to Adobe Animate for web and Android with bone rigging, frame-by-frame timeline, and video export.",
   "start_url": "/",
-  "id": "/",
+  "id": "animstudio-pwa-app",
   "display": "standalone",
   "orientation": "any",
-  "background_color": "#0e1116",
-  "theme_color": "#DC2626",
+  "background_color": "#0a0a0a",
+  "theme_color": "#E5232A",
   "scope": "/",
-  "categories": ["graphics", "productivity", "utilities", "design", "multimedia"],
+  "lang": "en",
+  "dir": "ltr",
+  "categories": ["graphics", "productivity", "utilities", "design", "multimedia", "education"],
   "icons": [
     {
       "src": "/favicon-48x48.png",
@@ -36,7 +38,25 @@
       "purpose": "any"
     },
     {
+      "src": "/pwa-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/favicon-256x256.png",
+      "sizes": "256x256",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
       "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/pwa-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
@@ -48,17 +68,53 @@
       "purpose": "maskable"
     },
     {
+      "src": "/logo-1024x1024.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
       "src": "/logo.svg",
-      "sizes": "512x512",
+      "sizes": "1024x1024",
       "type": "image/svg+xml",
       "purpose": "any"
     }
   ],
+  "screenshots": [
+    {
+      "src": "/og-image.png",
+      "sizes": "1200x630",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Animstudio 2D Animation Studio Workspace"
+    },
+    {
+      "src": "/og-image.png",
+      "sizes": "1200x630",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Animstudio Mobile Animation Workspace"
+    }
+  ],
   "shortcuts": [
     {
-      "name": "New Animation",
-      "short_name": "New Anim",
-      "description": "Create a new 2D/3D animation canvas",
+      "name": "New Animation Canvas",
+      "short_name": "New Canvas",
+      "description": "Start a new 2D/3D animation canvas",
+      "url": "/",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Bone Rigging Studio",
+      "short_name": "Rig Studio",
+      "description": "Character skeletal rigging and inverse kinematics",
+      "url": "/",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Export Animation Video",
+      "short_name": "Export Video",
+      "description": "Export 60 FPS MP4 and WebM video",
       "url": "/",
       "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
     }

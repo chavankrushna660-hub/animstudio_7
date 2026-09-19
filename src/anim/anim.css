@@ -213,12 +213,16 @@
 #anim-root button[class*="bg-indigo-6"],
 #anim-root button[class*="bg-indigo-5"],
 #anim-root button[class*="bg-orange"],
-#anim-root #topbar-make-single-btn,
 #anim-root #topbar-rig-sample-btn,
-#anim-root #btn-execute-make-single,
 #anim-root .btn-dark-white {
   background-color: #f4f4f5 !important;
   border-color: #d4d4d8 !important;
+  color: #09090b !important;
+}
+#anim-root #topbar-make-single-btn,
+#anim-root #btn-execute-make-single {
+  background-color: #facc15 !important;
+  border-color: #eab308 !important;
   color: #09090b !important;
 }
 #anim-root button[class*="bg-gradient"]:hover,
@@ -230,17 +234,24 @@
 #anim-root button[class*="bg-indigo-6"]:hover,
 #anim-root button[class*="bg-indigo-5"]:hover,
 #anim-root button[class*="bg-orange"]:hover,
-#anim-root #topbar-make-single-btn:hover,
 #anim-root #topbar-rig-sample-btn:hover,
-#anim-root #btn-execute-make-single:hover,
 #anim-root .btn-dark-white:hover {
   background-color: #e4e4e7 !important;
   border-color: #a1a1aa !important;
   color: #000000 !important;
 }
+#anim-root #topbar-make-single-btn:hover,
+#anim-root #btn-execute-make-single:hover {
+  background-color: #fde047 !important;
+  border-color: #ca8a04 !important;
+  color: #000000 !important;
+}
 #anim-root #topbar-make-single-btn *,
+#anim-root #btn-execute-make-single * {
+  color: #09090b !important;
+  stroke: #09090b !important;
+}
 #anim-root #topbar-rig-sample-btn *,
-#anim-root #btn-execute-make-single *,
 #anim-root button[class*="bg-orange"] *,
 #anim-root .btn-dark-white * {
   color: #09090b !important;

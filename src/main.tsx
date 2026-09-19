@@ -13,15 +13,18 @@ if (container) {
   );
 }
 
-// Ensure any stale service workers from prior testing are cleaned up in background without blocking render
+// Register production Progressive Web App (PWA) Service Worker
 if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
-  setTimeout(() => {
-    navigator.serviceWorker.getRegistrations().then((registrations) => {
-      for (const registration of registrations) {
-        registration.unregister().catch(() => {});
-      }
-    }).catch(() => {});
-  }, 2000);
+  window.addEventListener('load', () => {
+    navigator.serviceWorker
+      .register('/sw.js')
+      .then((reg) => {
+        console.log('Animstudio PWA Service Worker registered successfully:', reg.scope);
+      })
+      .catch((err) => {
+        console.warn('PWA Service Worker registration failed:', err);
+      });
+  });
 }
 
 
