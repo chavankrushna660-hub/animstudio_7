@@ -18,7 +18,7 @@ interface CustomSelectProps {
   disabled?: boolean;
 }
 
-export default function CustomSelect({
+function CustomSelect({
   value,
   onChange,
   options = EMPTY_ARRAY,
@@ -94,3 +94,5 @@ export default function CustomSelect({
     </div>
   );
 }
+
+export default React.memo(CustomSelect);

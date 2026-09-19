@@ -41,6 +41,7 @@ import LeftPanel from './components/LeftPanel';
 import RightPanel from './components/RightPanel';
 import CanvasArea from './components/CanvasArea';
 import Timeline from './components/Timeline';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import CustomDialog, { CustomDialogConfig } from './components/CustomDialog';
 import SavedAnimationsModal from './components/SavedAnimationsModal';
 import { VectorObject, Bone, Layer, Frame, Point, RealismSettings, View360, BrushSettings, Transform, LiquifyBrushSettings, PointShapeState, PointShapeNode, SculptBrushState, LineEditState, LineEditNode, EraserSettings, KnifeSettings, PivotSettings, MLSettings } from './types';
@@ -312,10 +313,13 @@ export function AnimStudioLogoMark({ className = "w-full h-full" }: { className?
       viewBox="0 0 1024 1024" 
       className={className}
       aria-label="AnimStudio Logo"
+      shapeRendering="geometricPrecision"
+      style={{ display: 'block', border: 'none', outline: 'none' }}
     >
-      <rect width="1024" height="1024" rx="220" fill="#E5232A" />
+      <rect width="1024" height="1024" rx="220" fill="#E5232A" stroke="none" />
       <path
         fill="#FFFFFF"
+        stroke="none"
         fillRule="evenodd"
         d="M 217.6 884.6 L 337.2 884.6 L 406.2 671.9 L 554.5 646.5 L 593.6 876.5 L 748.9 876.5 L 676.5 651.1 L 808.7 625.9 L 769.6 468.3 L 642.0 493.6 L 556.9 178.5 L 484.4 139.4 L 472.9 176.2 L 434.9 161.2 L 408.5 208.4 L 310.8 561.5 L 236.0 574.1 L 215.3 706.4 L 282.0 693.7 L 217.6 884.6 Z M 474.1 348.7 L 518.9 522.4 L 395.9 544.2 Z"
       />
@@ -897,14 +901,8 @@ export default function App() {
     }, 2000);
   };
 
-  const triggerSecurityWarning = (message: string) => {
-    if (limitTimeoutRef.current) {
-      clearTimeout(limitTimeoutRef.current);
-    }
-    setLimitNotification(message);
-    limitTimeoutRef.current = setTimeout(() => {
-      setLimitNotification(null);
-    }, 1000);
+  const triggerSecurityWarning = (_message: string) => {
+    // Keep security protection strictly enforced while suppressing popup notifications
   };
 
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
@@ -4036,18 +4034,18 @@ export default function App() {
       </div>
 
       {/* 1. TOP NAVIGATION BAR */}
-      <header className="anim-topbar h-16 bg-neutral-900 border-b-2 border-neutral-800 px-3 sm:px-5 flex items-center shrink-0 select-none z-20 flex-nowrap shadow-xl">
-        <div id="anim-brand" className="anim-brand flex items-center gap-3 shrink-0 flex-nowrap pr-4">
-          <div className="anim-logo-mark w-10 h-10 rounded-xl border border-neutral-700/80 flex items-center justify-center shrink-0 overflow-hidden shadow-lg bg-[#E5232A]">
+      <header className="anim-topbar h-[70px] sm:h-[76px] bg-neutral-900 border-b-2 border-neutral-800 px-3 sm:px-5 flex items-center shrink-0 select-none z-20 flex-nowrap shadow-xl">
+        <div id="anim-brand" className="anim-brand flex items-center gap-3.5 shrink-0 flex-nowrap pr-4">
+          <div className="anim-logo-mark w-14 h-14 sm:w-16 sm:h-16 rounded-2xl border-0 border-none flex items-center justify-center shrink-0 overflow-hidden bg-transparent p-0 m-0 shadow-none">
             <AnimStudioLogoMark className="w-full h-full object-contain" />
           </div>
-          <div className="flex flex-col justify-center shrink-0">
-            <h1 className="font-black text-base sm:text-lg tracking-wider text-white uppercase leading-none font-sans">
+          <div className="flex items-center justify-center shrink-0">
+            <h1 
+              className="font-black text-2xl sm:text-3xl md:text-4xl tracking-wide text-white uppercase leading-none font-sans select-none drop-shadow-md"
+              style={{ fontWeight: 900 }}
+            >
               Animstudio
             </h1>
-            <span className="text-[10px] sm:text-xs font-black text-amber-400 tracking-wider uppercase leading-tight mt-0.5">
-              2D &amp; 3D Studio
-            </span>
           </div>
         </div>
 
@@ -4083,7 +4081,7 @@ export default function App() {
             type="button"
             id="topbar-make-single-btn"
             onClick={handleTopBarMakeSingle}
-            className="btn-dark-white flex items-center gap-2.5 px-4 py-3 rounded-2xl font-black text-sm sm:text-base transition-all cursor-pointer shrink-0 shadow-md border-2 bg-yellow-200 hover:bg-yellow-100 active:bg-yellow-300 text-neutral-950 border-yellow-300"
+            className="btn-dark-white flex items-center gap-2.5 px-4 py-3 rounded-2xl font-black text-sm sm:text-base transition-all cursor-pointer shrink-0 shadow-md border-2 bg-yellow-400 hover:bg-yellow-300 active:bg-yellow-500 text-neutral-950 border-yellow-500"
             title="Make Single Drawing"
           >
             <Combine className="w-6 h-6 stroke-[3.2] shrink-0 text-neutral-950" />
@@ -4333,6 +4331,7 @@ export default function App() {
         />
 
         {/* Left Collapsible Parenting Hierarchy Tree Panel */}
+        <ErrorBoundary componentName="Tools Panel">
         <LeftPanel
           objects={objects}
           selectedObjectId={selectedObjectId}
@@ -4402,8 +4401,10 @@ export default function App() {
           batchColorLasso={batchColorLasso}
           batchAlignLasso={batchAlignLasso}
         />
+        </ErrorBoundary>
 
         {/* Central Vector Canvas Area */}
+        <ErrorBoundary componentName="Canvas Area">
         <CanvasArea
           objects={objects}
           setObjects={setObjects}
@@ -4504,6 +4505,7 @@ export default function App() {
           mwpState={mwpState}
           setMwpState={setMwpState}
         />
+        </ErrorBoundary>
 
         {/* Mesh Warp Puppet Wrap (MWP) Draggable Canvas Transform Box HUD */}
         {activeTool === 'MWP' && mwpState.activeMode === 'transform' && mwpState.transformPoints.length > 0 && (
@@ -4548,6 +4550,7 @@ export default function App() {
         )}
 
         {/* Right Collapsible Properties, Sliders, Smart Pinned Controls */}
+        <ErrorBoundary componentName="Inspector Panel">
         <RightPanel
           layers={layers}
           activeLayerId={activeLayerId}
@@ -4662,6 +4665,7 @@ export default function App() {
           onStopAutoFrames={stopAutoFrames}
           totalFrames={frames.length}
         />
+        </ErrorBoundary>
       </div>
 
       {/* 2.5 DESKTOP TIMELINE RESIZER BAR */}
@@ -4694,6 +4698,7 @@ export default function App() {
       )}
 
       {/* 3. BOTTOM FRAMES TIMELINE */}
+      <ErrorBoundary componentName="Timeline">
       <Timeline
         frames={frames}
         currentFrameIndex={currentFrameIndex}
@@ -4731,6 +4736,7 @@ export default function App() {
         onStopAutoFrames={stopAutoFrames}
         style={!isMobile ? { height: timelineHeight } : undefined}
       />
+      </ErrorBoundary>
 
       {/* 3.5 BOTTOM SPONSOR ADS BAR (2 Continuous Ads, Side-by-Side) */}
       <div className="w-full bg-transparent flex items-center justify-center gap-2 select-none shrink-0 my-1 px-2 animate-fade-in" id="bottom-ads-bar" style={{ border: 'none', outline: 'none', background: 'transparent' }}>
@@ -4766,8 +4772,8 @@ export default function App() {
         </div>
       )}
 
-      {/* Daily limit alert toast */}
-      {limitNotification && (
+      {/* Daily limit alert toast (security notifications suppressed per design) */}
+      {limitNotification && !limitNotification.toLowerCase().includes("security") && (
         <div 
           id="limit-toast-notification"
           className="fixed bottom-24 right-6 z-50 flex items-start justify-between gap-3 p-4 rounded-2xl shadow-2xl border text-xs max-w-sm animate-fade-in bg-rose-950/95 border-rose-500/30 text-rose-300"

@@ -541,12 +541,18 @@ input.color-hue-slider::-moz-range-track {
   z-index: 40;
   background-color: var(--s1) !important;
 }
+#anim-root .anim-logo-mark,
+#anim-root .anim-logo-mark * {
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
 #anim-root .anim-logo-mark {
-  border-radius: 8px;
-  overflow: hidden;
+  overflow: visible;
   display: flex;
   align-items: center;
   justify-content: center;
+  background: transparent !important;
 }
 
 #anim-root .anim-topbar-scroll {
@@ -768,6 +774,50 @@ input.color-hue-slider::-moz-range-track {
   stroke: #000000 !important;
 }
 
+/* Pen Tool Panel Buttons: Explicit Grey background with clearly visible black text */
+#pen-tool-panel button,
+div#pen-tool-panel button {
+  background-color: #d1d5db !important;
+  background: #d1d5db !important;
+  color: #000000 !important;
+  border: 1px solid #9ca3af !important;
+}
+
+#pen-tool-panel button:hover,
+div#pen-tool-panel button:hover {
+  background-color: #9ca3af !important;
+  background: #9ca3af !important;
+  color: #000000 !important;
+}
+
+#pen-tool-panel button *,
+div#pen-tool-panel button * {
+  color: #000000 !important;
+  stroke: #000000 !important;
+}
+
+/* Toolbar Collapse Button replacing the top header div */
+#toolbar-collapse-btn,
+button#toolbar-collapse-btn {
+  background-color: #ffffff !important;
+  background: #ffffff !important;
+  color: #000000 !important;
+  border-bottom: 2px solid #e5e7eb !important;
+}
+
+#toolbar-collapse-btn:hover,
+button#toolbar-collapse-btn:hover {
+  background-color: #f3f4f6 !important;
+  background: #f3f4f6 !important;
+  color: #000000 !important;
+}
+
+#toolbar-collapse-btn *,
+button#toolbar-collapse-btn * {
+  color: #000000 !important;
+  stroke: #000000 !important;
+}
+
 /* 5. ACTIVE BUTTONS / TOOLS: YELLOW BACKGROUND WITHOUT GLOW */
 #anim-root .active-tool-btn,
 #anim-root button.active-tool-btn,
@@ -882,8 +932,16 @@ input.color-hue-slider::-moz-range-track {
 }
 
 /* Elements expand height naturally to fit text without expanding beyond panel width */
-#left-layers-panel-container button:not(#left-panel-toggle-btn):not(.card-action-btn),
-#right-properties-panel-container button:not(#right-panel-toggle-btn):not(.card-action-btn),
+#left-layers-panel-container button,
+#right-properties-panel-container button {
+  min-height: fit-content;
+  max-width: 100%;
+  box-sizing: border-box !important;
+  white-space: nowrap !important;
+  word-break: keep-all !important;
+  overflow-wrap: normal !important;
+}
+
 #left-layers-panel-container .drawing-card-item,
 #left-layers-panel-container .layer-card-item,
 #right-properties-panel-container .drawing-card-item,
@@ -892,9 +950,6 @@ input.color-hue-slider::-moz-range-track {
   height: auto !important;
   max-width: 100% !important;
   box-sizing: border-box !important;
-  word-break: break-word !important;
-  overflow-wrap: break-word !important;
-  white-space: normal !important;
   border: 1px solid rgba(0, 0, 0, 0.08) !important;
   box-shadow: none !important;
 }
@@ -1181,49 +1236,40 @@ header span,
 
 /* 3. LEFT PANEL (HIERARCHY & LAYERS) ENHANCEMENTS */
 #left-layers-panel-container {
-  font-size: 14px !important;
+  font-size: 13px !important;
 }
 
-#left-layers-panel-container button:not(.card-action-btn) {
-  font-size: 14px !important;
-  font-weight: 800 !important;
-  padding-top: 8px !important;
-  padding-bottom: 8px !important;
-}
-
-#left-layers-panel-container button svg {
-  width: 20px !important;
-  height: 20px !important;
-  stroke-width: 2.6px !important;
+#left-layers-panel-container button {
+  white-space: nowrap !important;
 }
 
 #left-layers-panel-container .card-action-btn {
-  width: 32px !important;
-  height: 32px !important;
+  width: 30px !important;
+  height: 30px !important;
 }
 
 #left-layers-panel-container .card-action-btn svg {
-  width: 17px !important;
-  height: 17px !important;
-  stroke-width: 2.6px !important;
+  width: 16px !important;
+  height: 16px !important;
+  stroke-width: 2.4px !important;
 }
 
 #left-layers-panel-container span,
 #left-layers-panel-container label,
 #left-layers-panel-container p {
-  font-size: 13.5px !important;
+  font-size: 12.5px !important;
   font-weight: 800 !important;
 }
 
 #left-layers-panel-container .h-16 span {
-  font-size: 15px !important;
+  font-size: 13px !important;
   font-weight: 900 !important;
 }
 
 #left-layers-panel-container .h-16 svg {
-  width: 22px !important;
-  height: 22px !important;
-  stroke-width: 2.8px !important;
+  width: 18px !important;
+  height: 18px !important;
+  stroke-width: 2.5px !important;
 }
 
 /* 5. TOGGLE HANDLES ENHANCEMENTS */
@@ -1246,6 +1292,60 @@ header span,
 #right-properties-panel-container .brush-preview-box svg {
   height: 32px !important;
   width: 100% !important;
+}
+
+/* Instant High-Speed Panel Dragging and Button Interactions */
+#anim-root button,
+#anim-root [role="button"],
+#anim-root input,
+#anim-root select {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+#left-layers-panel-container,
+#right-properties-panel-container,
+#anim-toolbar-container {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  will-change: width, transform;
+}
+
+/* ---------- 9. ULTRA-FAST CANVAS PIPELINE & COMPONENT RENDERING ACCELERATION ---------- */
+#anim-root canvas {
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+  transform: translate3d(0, 0, 0);
+  -webkit-transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  will-change: transform;
+}
+
+#anim-root .anim-canvas-container,
+#anim-canvas-area {
+  contain: layout size paint;
+  transform: translate3d(0, 0, 0);
+  will-change: transform;
+}
+
+#anim-root aside,
+#anim-root header,
+#anim-root .anim-topbar,
+#anim-root #anim-timeline-container {
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  contain: content;
+}
+
+#anim-root * {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#anim-root .anim-brand h1 {
+  font-weight: 900 !important;
+  letter-spacing: 0.025em;
 }
 
 

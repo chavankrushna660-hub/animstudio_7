@@ -49,7 +49,8 @@ import {
   AlignRight,
   AlignVerticalSpaceAround,
   ZoomIn,
-  ZoomOut
+  ZoomOut,
+  XCircle
 } from 'lucide-react';
 import { VectorObject, Layer, BrushSettings, EraserSettings, KnifeSettings, PivotSettings, MLSettings } from '../types';
 import { getDailyLimitStatus } from '../utils/engine3D';
@@ -512,6 +513,21 @@ function LeftPanel({
 
           {/* Bottom Row: Options distinctly in their own horizontal row so they NEVER hide drawing name */}
           <div className="card-actions-row flex items-center justify-end gap-1.5 w-full pt-1 border-t border-neutral-200 dark:border-neutral-800/80">
+            {isSelected && (
+              <button
+                type="button"
+                id={`btn-unselect-card-${obj.id}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setSelectedObjectId(null);
+                }}
+                className="card-action-btn px-2.5 h-8 flex items-center justify-center gap-1 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-black text-[11px] uppercase tracking-wider transition-colors cursor-pointer shrink-0 shadow-sm active:scale-95 mr-auto"
+                title="Unselect this drawing (drawing stays on canvas)"
+              >
+                <XCircle className="w-4 h-4 stroke-[2.6]" />
+                <span>Unselect</span>
+              </button>
+            )}
             <button
               type="button"
               onClick={(e) => {
@@ -606,7 +622,7 @@ function LeftPanel({
         onClick={() => setOpen(!open)}
         style={{
           position: 'absolute',
-          left: open ? `${(toolbarCollapsed ? 96 : 288) + 256}px` : `${toolbarCollapsed ? 96 : 288}px`,
+          left: open ? `${(toolbarCollapsed ? 96 : 288) + 320}px` : `${toolbarCollapsed ? 96 : 288}px`,
           top: '50%',
           transform: 'translateY(-50%)',
           zIndex: 100,
@@ -628,38 +644,53 @@ function LeftPanel({
       <div
         id="left-layers-panel-container"
         style={{ left: `${toolbarCollapsed ? 96 : 288}px` }}
-        className={`absolute h-full transition-all duration-200 shrink-0 z-40 overflow-visible pointer-events-none ${
-          open ? 'w-64' : 'w-0'
+        className={`absolute h-full transition-[width] duration-75 ease-out shrink-0 z-40 overflow-visible pointer-events-none will-change-[width] ${
+          open ? 'w-80' : 'w-0'
         }`}
       >
-        <div className={`pointer-events-auto w-full h-full bg-white border-r border-neutral-200 flex flex-col overflow-hidden text-black ${
-          open ? 'w-64' : 'w-0 border-r-0'
+        <div className={`pointer-events-auto w-full h-full bg-white border-r border-neutral-200 flex flex-col overflow-hidden text-black transition-[width] duration-75 ease-out will-change-[width] ${
+          open ? 'w-80' : 'w-0 border-r-0'
         }`}>
         {open && (
         <>
           {/* Header */}
-          <div className="h-16 border-b border-neutral-200 flex items-center justify-between px-4 shrink-0 select-none bg-white">
-            <span className="text-sm uppercase tracking-widest font-black text-black flex items-center gap-2">
-              <Folder className="w-5 h-5 stroke-[2.5] text-amber-500" />
-              HIERARCHY TREE
+          <div className="h-16 border-b border-neutral-200 flex items-center justify-between px-3.5 shrink-0 select-none bg-white">
+            <span className="text-xs uppercase tracking-wider font-black text-black flex items-center gap-1.5 whitespace-nowrap">
+              <Folder className="w-4 h-4 stroke-[2.5] text-amber-500 shrink-0" />
+              <span>Hierarchy Tree</span>
             </span>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 shrink-0">
+              <button
+                id="btn-unselect-drawing-header"
+                type="button"
+                onClick={() => setSelectedObjectId(null)}
+                disabled={!selectedObjectId}
+                className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider whitespace-nowrap transition-all cursor-pointer border shadow-xs ${
+                  selectedObjectId
+                    ? 'bg-rose-50 hover:bg-rose-100 text-rose-700 border-rose-200 active:scale-95'
+                    : 'bg-neutral-100 text-neutral-400 border-neutral-200 opacity-40 cursor-not-allowed'
+                }`}
+                title={selectedObjectId ? "Unselect drawing (drawing stays on canvas)" : "No drawing selected"}
+              >
+                <XCircle className="w-3.5 h-3.5 stroke-[2.4] text-rose-500 shrink-0" />
+                <span>Unselect</span>
+              </button>
               <button
                 onClick={handleGroupSelected}
                 disabled={!selectedObjectId}
-                className={`p-2 rounded-xl bg-white hover:bg-neutral-100 text-black transition-all cursor-pointer border-0 shadow-sm ${
+                className={`p-1.5 rounded-lg bg-white hover:bg-neutral-100 text-black transition-all cursor-pointer border border-neutral-200 shadow-xs ${
                   !selectedObjectId ? 'opacity-40 cursor-not-allowed' : ''
                 }`}
                 title="Add Selected to Group"
               >
-                <FolderPlus className="w-5 h-5 stroke-[2.4]" />
+                <FolderPlus className="w-4 h-4 stroke-[2.4]" />
               </button>
               <button
                 onClick={() => setOpen(false)}
-                className="p-2 rounded-xl bg-white hover:bg-neutral-100 text-black transition-all lg:hidden cursor-pointer border-0 shadow-sm"
+                className="p-1.5 rounded-lg bg-white hover:bg-neutral-100 text-black transition-all lg:hidden cursor-pointer border border-neutral-200 shadow-xs"
                 title="Close Sidebar"
               >
-                <ChevronLeft className="w-5 h-5 stroke-[2.4]" />
+                <ChevronLeft className="w-4 h-4 stroke-[2.4]" />
               </button>
             </div>
           </div>
@@ -697,19 +728,24 @@ function LeftPanel({
             </div>
 
             {/* Adaptive Geometry Deformation Controller */}
-            <div className="border-2 border-amber-500/40 bg-neutral-950/90 rounded-2xl p-3.5 space-y-3.5 shrink-0 shadow-lg" id="adaptive-subdivision-panel">
-              <div className="flex items-center gap-2 text-neutral-300">
-                <Sliders className="w-4.5 h-4.5 stroke-[2.4]" />
+            <div className="border border-amber-500/40 bg-neutral-950/90 rounded-2xl p-3 space-y-2.5 shrink-0 shadow-lg" id="adaptive-subdivision-panel">
+              <div className="flex items-center justify-between text-neutral-300">
+                <div className="flex items-center gap-1.5 text-amber-400">
+                  <Sliders className="w-4 h-4 stroke-[2.4]" />
+                  <span className="text-[11px] font-black uppercase tracking-wider">Adaptive Split</span>
+                </div>
+                <span className={`text-[9px] font-mono font-black px-1.5 py-0.5 rounded ${adaptiveSubdivisionEnabled ? 'bg-amber-400/20 text-amber-400' : 'bg-neutral-800 text-neutral-500'}`}>
+                  {adaptiveSubdivisionEnabled ? 'ACTIVE' : 'OFF'}
+                </span>
               </div>
 
-              
-              <div className="flex items-center gap-2.5">
+              <div className="flex items-center gap-2">
                 <button
                   id="btn-start-adaptive"
                   onClick={() => setAdaptiveSubdivisionEnabled(true)}
-                  className={`flex-1 py-2 px-3 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-200 cursor-pointer border-2 ${
+                  className={`flex-1 py-1.5 px-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-200 cursor-pointer border-2 whitespace-nowrap ${
                     adaptiveSubdivisionEnabled
-                      ? 'bg-amber-500 text-neutral-950 border-amber-300 shadow-md scale-105'
+                      ? 'bg-amber-500 text-neutral-950 border-amber-300 shadow-md scale-102'
                       : 'bg-neutral-900 border-neutral-800 text-neutral-300 hover:text-white'
                   }`}
                 >
@@ -718,9 +754,9 @@ function LeftPanel({
                 <button
                   id="btn-stop-adaptive"
                   onClick={() => setAdaptiveSubdivisionEnabled(false)}
-                  className={`flex-1 py-2 px-3 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-200 cursor-pointer border-2 ${
+                  className={`flex-1 py-1.5 px-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-200 cursor-pointer border-2 whitespace-nowrap ${
                     !adaptiveSubdivisionEnabled
-                      ? 'bg-rose-600 text-white border-rose-400 shadow-md scale-105'
+                      ? 'bg-rose-600 text-white border-rose-400 shadow-md scale-102'
                       : 'bg-neutral-900 border-neutral-800 text-neutral-400 hover:text-rose-400'
                   }`}
                 >
@@ -760,20 +796,34 @@ function LeftPanel({
                   </div>
                   <span className="text-[9px] text-neutral-500 font-mono">SELECTED</span>
                 </div>
-                <div className="bg-neutral-900 border border-neutral-800 rounded-xl p-2.5 flex items-center justify-between gap-2">
-                  <span 
-                    onClick={() => setSelectedObjectId(null)}
-                    className="text-[13px] truncate font-extrabold text-white flex-1 cursor-pointer hover:text-rose-400 transition-colors"
-                    title="Click to unselect drawing"
-                  >
-                    {objects[selectedObjectId].name}
-                  </span>
-                  <button
-                    onClick={() => duplicateObject(selectedObjectId)}
-                    className="bg-amber-500 hover:bg-amber-600 text-neutral-950 text-[10px] font-black px-2.5 py-1 rounded-lg uppercase tracking-wider transition-all cursor-pointer shadow-md shrink-0"
-                  >
-                    Duplicate
-                  </button>
+                <div className="bg-neutral-900 border border-neutral-800 rounded-xl p-2.5 space-y-2">
+                  <div className="flex items-center justify-between gap-2">
+                    <span 
+                      className="text-xs truncate font-extrabold text-white flex-1"
+                      title={objects[selectedObjectId].name}
+                    >
+                      {objects[selectedObjectId].name}
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2 pt-0.5">
+                    <button
+                      id="btn-unselect-drawing-quick"
+                      type="button"
+                      onClick={() => setSelectedObjectId(null)}
+                      className="bg-rose-600 hover:bg-rose-700 text-white text-[10px] font-black py-1.5 px-2 rounded-lg uppercase tracking-wider transition-all cursor-pointer shadow-md flex items-center justify-center gap-1 active:scale-95 whitespace-nowrap"
+                      title="Unselect drawing (drawing stays on canvas)"
+                    >
+                      <XCircle className="w-3.5 h-3.5 stroke-[2.6] shrink-0" />
+                      <span>Unselect</span>
+                    </button>
+                    <button
+                      onClick={() => duplicateObject(selectedObjectId)}
+                      className="bg-amber-500 hover:bg-amber-600 text-neutral-950 text-[10px] font-black py-1.5 px-2 rounded-lg uppercase tracking-wider transition-all cursor-pointer shadow-md flex items-center justify-center gap-1 active:scale-95 whitespace-nowrap"
+                    >
+                      <Copy className="w-3.5 h-3.5 stroke-[2.6] shrink-0" />
+                      <span>Duplicate</span>
+                    </button>
+                  </div>
                 </div>
 
                 {/* Z-Index Controls */}
@@ -1278,6 +1328,7 @@ function LeftPanel({
                 {/* Path Action & Erase Controls */}
                 <div className="space-y-1.5">
                   <button
+                    id="pen-tool-btn-finish"
                     type="button"
                     onClick={() => {
                       try {
@@ -1286,13 +1337,14 @@ function LeftPanel({
                         console.error('Finish pen stroke error:', err);
                       }
                     }}
-                    className="w-full bg-cyan-500 hover:bg-cyan-400 text-neutral-950 text-[9.5px] font-black py-1.5 rounded-lg uppercase tracking-wider transition-all cursor-pointer shadow-md text-center flex items-center justify-center gap-1.5"
+                    className="w-full !bg-neutral-200 hover:!bg-neutral-300 !text-black text-[10px] font-black py-2 px-3 rounded-lg uppercase tracking-wider transition-all cursor-pointer shadow-sm text-center flex items-center justify-center gap-1.5 border border-neutral-400/80 active:scale-[0.98]"
                   >
-                    <CheckCircle2 className="w-3 h-3" />
-                    Finish / New Pen Stroke
+                    <CheckCircle2 className="w-3.5 h-3.5 !text-black stroke-[2.8]" />
+                    <span>Finish / New Pen Stroke</span>
                   </button>
 
                   <button
+                    id="pen-tool-btn-erase-drawing"
                     type="button"
                     onClick={() => {
                       try {
@@ -1304,13 +1356,14 @@ function LeftPanel({
                         console.error('Erase pen drawing error:', err);
                       }
                     }}
-                    className="w-full bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 text-[9.5px] font-bold py-1.5 rounded-lg uppercase tracking-wider transition-all cursor-pointer border border-rose-500/40 text-center flex items-center justify-center gap-1.5"
+                    className="w-full !bg-neutral-200 hover:!bg-neutral-300 !text-black text-[10px] font-black py-2 px-3 rounded-lg uppercase tracking-wider transition-all cursor-pointer shadow-sm text-center flex items-center justify-center gap-1.5 border border-neutral-400/80 active:scale-[0.98]"
                   >
-                    <Trash2 className="w-3 h-3 text-rose-400" />
-                    Erase Pen Drawing
+                    <Trash2 className="w-3.5 h-3.5 !text-black stroke-[2.8]" />
+                    <span>Erase Pen Drawing</span>
                   </button>
 
                   <button
+                    id="pen-tool-btn-erase-anchor"
                     type="button"
                     onClick={() => {
                       try {
@@ -1319,12 +1372,13 @@ function LeftPanel({
                         console.error('Erase selected anchor error:', err);
                       }
                     }}
-                    className="w-full bg-neutral-900 hover:bg-neutral-800 text-neutral-300 text-[9px] font-medium py-1.5 rounded-lg uppercase tracking-wider transition-all cursor-pointer border border-neutral-800 text-center"
+                    className="w-full !bg-neutral-200 hover:!bg-neutral-300 !text-black text-[10px] font-black py-2 px-3 rounded-lg uppercase tracking-wider transition-all cursor-pointer shadow-sm text-center border border-neutral-400/80 active:scale-[0.98]"
                   >
-                    Erase Selected Anchor Node
+                    <span>Erase Selected Anchor Node</span>
                   </button>
 
                   <button
+                    id="pen-tool-btn-reverse-path"
                     type="button"
                     onClick={() => {
                       try {
@@ -1337,9 +1391,9 @@ function LeftPanel({
                       }
                     }}
                     disabled={!selectedObjectId}
-                    className="w-full bg-neutral-900 hover:bg-neutral-800 disabled:opacity-40 text-cyan-300 text-[9px] font-bold py-1.5 rounded-lg uppercase tracking-wider transition-all cursor-pointer border border-neutral-800 text-center"
+                    className="w-full !bg-neutral-200 hover:!bg-neutral-300 disabled:opacity-40 !text-black text-[10px] font-black py-2 px-3 rounded-lg uppercase tracking-wider transition-all cursor-pointer shadow-sm text-center border border-neutral-400/80 active:scale-[0.98]"
                   >
-                    Reverse Path Direction
+                    <span>Reverse Path Direction</span>
                   </button>
                 </div>
               </div>

@@ -23,7 +23,9 @@ import {
   getSavedAnimationsQuotaStatus, 
   saveUserAnimationToQuotaDb, 
   deleteSavedAnimationById,
-  isCanvasContentAvailable
+  isCanvasContentAvailable,
+  exportProjectToFile,
+  importProjectFromFile
 } from '../utils/database';
 import { Frame, VectorObject, Bone, Layer } from '../types';
 
@@ -356,6 +358,20 @@ export default function SavedAnimationsModal({
                     >
                       <FolderOpen className="w-4 h-4" />
                       Load Project
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        exportProjectToFile(item);
+                        if (onNotification) {
+                          onNotification({ type: 'success', message: `Saved "${item.title}.animstudio" directly to your device!` });
+                        }
+                      }}
+                      className="h-11 px-4 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-300 font-black text-xs uppercase tracking-wider flex items-center gap-2 transition cursor-pointer"
+                      title="Save animation file directly to your device storage (.animstudio)"
+                    >
+                      <Download className="w-4 h-4" />
+                      Save to Device
                     </button>
 
                     <button

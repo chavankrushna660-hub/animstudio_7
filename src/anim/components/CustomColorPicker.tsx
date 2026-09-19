@@ -109,7 +109,7 @@ function hsvToHex(h: number, s: number, v: number): string {
   }
 }
 
-export default function CustomColorPicker({
+function CustomColorPicker({
   color,
   onChange,
   label,
@@ -465,3 +465,5 @@ export default function CustomColorPicker({
     </div>
   );
 }
+
+export default React.memo(CustomColorPicker);

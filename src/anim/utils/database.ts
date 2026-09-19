@@ -15,7 +15,7 @@ export interface SavedAnimationRecord {
 }
 
 // Maximum quota allowed for saved animations per user/session
-export const MAX_SAVED_ANIMATIONS_QUOTA = 10;
+export const MAX_SAVED_ANIMATIONS_QUOTA = 50;
 
 // Local storage keys for our database
 const DB_STORAGE_KEY_V2 = 'animastudio_custom_db_v2';
@@ -289,6 +289,73 @@ export function getUserAnimation(email: string): { record: SavedAnimationRecord 
 export function deleteUserAnimation(email: string) {
   const items = getAllUserSavedAnimations(email);
   items.forEach(item => deleteSavedAnimationById(item.id, email));
+}
+
+/**
+ * Exports an animation project to a downloadable .animstudio file on the user's device.
+ */
+export function exportProjectToFile(record: SavedAnimationRecord): boolean {
+  try {
+    const jsonStr = JSON.stringify(record, null, 2);
+    const blob = new Blob([jsonStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const safeTitle = (record.title || 'animation_project')
+      .replace(/[^a-z0-9_-]/gi, '_')
+      .toLowerCase();
+    const filename = `${safeTitle}.animstudio`;
+
+    // Check if Android Native Bridge exists
+    if ((window as any).AndroidBridge && typeof (window as any).AndroidBridge.showToast === 'function') {
+      (window as any).AndroidBridge.showToast(`Exporting ${filename} to your device...`);
+    }
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    return true;
+  } catch (err) {
+    console.error('Failed to export project to device file', err);
+    return false;
+  }
+}
+
+/**
+ * Imports an animation project from a local .animstudio or .json file.
+ */
+export function importProjectFromFile(file: File): Promise<SavedAnimationRecord> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const text = e.target?.result as string;
+        const parsed = JSON.parse(text);
+        if (!parsed || typeof parsed !== 'object') {
+          throw new Error('Invalid project file structure');
+        }
+        const record: SavedAnimationRecord = {
+          id: `anim_imported_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          title: parsed.title || file.name.replace(/\.(animstudio|json)$/i, '') || 'Imported Project',
+          savedAt: Date.now(),
+          email: parsed.email || 'guest',
+          fps: Number(parsed.fps) || 12,
+          layers: Array.isArray(parsed.layers) ? parsed.layers : [],
+          objects: parsed.objects || {},
+          frames: Array.isArray(parsed.frames) ? parsed.frames : [],
+          bones: Array.isArray(parsed.bones) ? parsed.bones : [],
+          thumbnailUrl: parsed.thumbnailUrl || ''
+        };
+        resolve(record);
+      } catch (err: any) {
+        reject(new Error(err.message || 'Failed to parse project file'));
+      }
+    };
+    reader.onerror = () => reject(new Error('Failed to read file from device'));
+    reader.readAsText(file);
+  });
 }
 
 /**

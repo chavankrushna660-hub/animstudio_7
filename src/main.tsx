@@ -3,24 +3,25 @@ import {createRoot} from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
 
-// Ensure any stale service workers or caches are cleaned up
-if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
-  navigator.serviceWorker.getRegistrations().then((registrations) => {
-    for (const registration of registrations) {
-      registration.unregister().catch(() => {});
-    }
-  }).catch(() => {});
-  if ('caches' in window) {
-    caches.keys().then((keys) => {
-      keys.forEach((key) => caches.delete(key).catch(() => {}));
-    }).catch(() => {});
-  }
+const container = document.getElementById('root');
+if (container) {
+  const root = createRoot(container);
+  root.render(
+    <StrictMode>
+      <App />
+    </StrictMode>,
+  );
 }
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
-);
+// Ensure any stale service workers from prior testing are cleaned up in background without blocking render
+if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
+  setTimeout(() => {
+    navigator.serviceWorker.getRegistrations().then((registrations) => {
+      for (const registration of registrations) {
+        registration.unregister().catch(() => {});
+      }
+    }).catch(() => {});
+  }, 2000);
+}
 
 

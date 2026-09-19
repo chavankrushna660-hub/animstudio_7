@@ -3220,11 +3220,11 @@ function RightPanel({
 
       <div
         id="right-properties-panel-container"
-        className={`absolute right-0 top-0 bottom-0 h-full transition-all duration-200 shrink-0 z-40 overflow-visible pointer-events-none ${
+        className={`absolute right-0 top-0 bottom-0 h-full transition-[width] duration-75 ease-out shrink-0 z-40 overflow-visible pointer-events-none will-change-[width] ${
           open ? 'w-80' : 'w-0'
         }`}
       >
-        <div className={`pointer-events-auto w-full h-full bg-white border-l border-neutral-200 flex flex-col overflow-hidden box-border min-w-0 text-black ${
+        <div className={`pointer-events-auto w-full h-full bg-white border-l border-neutral-200 flex flex-col overflow-hidden box-border min-w-0 text-black transition-[width] duration-75 ease-out will-change-[width] ${
           open ? 'w-80' : 'w-0 border-l-0'
         }`}>
         {open && (
@@ -11402,10 +11402,10 @@ function RightPanel({
                     <button
                       id="btn-execute-make-single"
                       onClick={handleMakeSingle}
-                      className="btn-dark-white w-full py-2 bg-neutral-100 hover:bg-neutral-200 border-2 border-neutral-300 text-neutral-900 font-black rounded-xl transition-all shadow-sm text-xs flex items-center justify-center gap-1.5 mt-2 cursor-pointer animate-fade-in"
+                      className="btn-dark-white w-full py-2 bg-yellow-400 hover:bg-yellow-300 active:bg-yellow-500 border-2 border-yellow-500 text-neutral-950 font-black rounded-xl transition-all shadow-sm text-xs flex items-center justify-center gap-1.5 mt-2 cursor-pointer animate-fade-in"
                     >
-                      <GitMerge className="w-3.5 h-3.5 text-neutral-900" />
-                      <span className="font-black text-neutral-900">MAKE SINGLE DRAWING</span>
+                      <GitMerge className="w-3.5 h-3.5 text-neutral-950" />
+                      <span className="font-black text-neutral-950">MAKE SINGLE DRAWING</span>
                     </button>
                   )}
                 </div>
@@ -12582,11 +12582,7 @@ function RightPanel({
 
             {/* AI SMOOTH MOTION & LOOP GENERATOR PANEL */}
             <div id="ai-smooth-motion-panel" className="space-y-4 bg-neutral-950/40 p-4 rounded-2xl border border-neutral-800/50 mt-4 animate-fade-in">
-              <div className="flex items-center justify-between text-[10px] text-amber-400 font-black uppercase tracking-wider font-black border-b border-neutral-800/40 pb-2.5">
-                <span className="flex items-center gap-1.5">
-                  <Activity className="w-3.5 h-3.5 text-amber-500" />
-                  AI Smooth Motion Generator
-                </span>
+              <div className="flex items-center justify-end text-[10px] text-amber-400 font-black uppercase tracking-wider border-b border-neutral-800/40 pb-2.5">
                 <span className="bg-amber-500/15 text-amber-400 text-[8px] font-black px-1.5 py-0.5 rounded-full uppercase">
                   Advanced Tweening
                 </span>
@@ -12761,11 +12757,7 @@ function RightPanel({
                   {/* Auto In-between / Tweening Toggle */}
                   {setAutoTween && (
                     <div className="space-y-1.5 pt-2 border-t border-neutral-800/40" id="auto-inbetween-panel">
-                      <div className="flex items-center justify-between">
-                        <label className="text-[10px] text-neutral-300 font-black uppercase tracking-wider flex items-center gap-1.5">
-                          <Activity className="w-3.5 h-3.5 text-amber-400" />
-                          Auto In-between Animation
-                        </label>
+                      <div className="flex items-center justify-end">
                         <button
                           type="button"
                           onClick={() => setAutoTween(!autoTween)}
@@ -12778,7 +12770,6 @@ function RightPanel({
                           {autoTween ? 'ENABLED' : 'DISABLED'}
                         </button>
                       </div>
-                      
                     </div>
                   )}
                 </div>

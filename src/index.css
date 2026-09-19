@@ -20,4 +20,19 @@
   input, select, textarea {
     font-size: 16px !important;
   }
+
+  /* GPU Layer Promotion & Ultra-Fast 60/120fps Canvas Rendering */
+  #front-vector-canvas, canvas {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    will-change: transform;
+    touch-action: none !important;
+    image-rendering: -webkit-optimize-contrast;
+  }
+
+  /* Eliminate mobile tap latency */
+  button, input, select, textarea, [role="button"], a {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
 }
